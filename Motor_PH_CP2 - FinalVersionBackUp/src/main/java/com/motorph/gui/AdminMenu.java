@@ -13,46 +13,87 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 
+/**
+ * Creates and manages the administrator interface of the MotorPH application.
+ *
+ * This class provides the navigation buttons, salary report interface,
+ * employee management screens, payroll computation functions, and logout
+ * controls available to administrator users.
+ */
 public class AdminMenu {
 
+    // Default background color used by inactive navigation buttons.
     private static final Color NORMAL_BUTTON = Color.GRAY;
+
+    // Background color used to highlight the currently active navigation button.
     private static final Color ACTIVE_BUTTON = new Color(70, 130, 180);
 
+    /**
+     * Creates the main administrator menu panel.
+     *
+     * The method initializes the side-navigation buttons, employee number
+     * input field, month and year selectors, salary report panels, and
+     * corresponding button actions.
+     *
+     * @param cardLayout the main layout used to switch application screens
+     * @param containerPanel the main panel containing the application screens
+     * @return the completed administrator menu panel
+     */
     public static JPanel createAdminMenu(CardLayout cardLayout, JPanel containerPanel) {
 
+        // Main panel containing the side menu and administrator content area.
         JPanel adminMenuPanel = new JPanel(new GridBagLayout());
         adminMenuPanel.setBackground(Color.BLACK);
 
+        // Create the administrator navigation buttons.
         JButton allEmployeeButton = new JButton("All Employee");
         JButton addEmployeeButton = new JButton("Add Employee");
         JButton editEmployeeButton = new JButton("Edit Employee");
         JButton deleteEmployeeButton = new JButton("Delete Employee");
         JButton computeSalaryButton = new JButton("Compute Salaries");
         JButton logoutButton = new JButton("Logout");
+
+        // Buttons used for submitting employee and salary operations.
         JButton enterButton = new JButton("Enter");
         JButton computeSalariesButton = new JButton("Compute Salaries");
         
-        
-
+        // Input field used to enter an employee number.
         JTextField employeeNumberField = new JTextField();
+
+        // Displays the detailed salary breakdown of a selected employee.
         JTextArea textArea = new JTextArea(10, 18);
 
+        // Month selector used for attendance and payroll filtering.
         JComboBox<String> monthBox = new JComboBox<>(new String[]{
                 "January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"
         });;
 
+        // Year selector used for attendance and payroll filtering.
         JComboBox<String> yearBox = new JComboBox<>(new String[]{
                 "2024", "2025", "2026", "2027", "2028"
         });
 
+        /*
+         * Card layout used to switch between the salary report and
+         * individual salary breakdown screens.
+         */
         CardLayout contentCardLayout = new CardLayout();
         JPanel contentPanel = new JPanel(contentCardLayout);
 
+        // Main salary report screen.
         JPanel salaryPanel = new JPanel(new BorderLayout());
         salaryPanel.setBackground(Color.WHITE);
 
-        JPanel topPanel = createTopPanel(employeeNumberField, monthBox, yearBox, enterButton);
+        // Create the salary report control panel.
+        JPanel topPanel = createTopPanel(
+                employeeNumberField,
+                monthBox,
+                yearBox,
+                enterButton
+        );
+
+        // Create the employee salary list panel.
         JPanel employeeListPanel = createEmployeeListPanel(
                 monthBox,
                 yearBox,
@@ -62,23 +103,28 @@ public class AdminMenu {
                 contentPanel
         );
 
+        // Place the controls and employee list inside the salary panel.
         salaryPanel.add(topPanel, BorderLayout.NORTH);
         salaryPanel.add(employeeListPanel, BorderLayout.CENTER);
 
+        // Register the salary report and salary breakdown screens.
         contentPanel.add(salaryPanel, "Salary_Report");
         contentPanel.add(createCenterPanel(textArea), "Salary_Breakout");
 
+        // Create the administrator side-navigation panel.
         JPanel leftPanel = createLeftPanel(
-        allEmployeeButton,
-        addEmployeeButton,
-        editEmployeeButton,
-        deleteEmployeeButton,
-        computeSalaryButton,
-        logoutButton
+                allEmployeeButton,
+                addEmployeeButton,
+                editEmployeeButton,
+                deleteEmployeeButton,
+                computeSalaryButton,
+                logoutButton
         );
 
+        // Add the navigation and content panels to the administrator menu.
         addPanelsToAdminMenu(adminMenuPanel, leftPanel, contentPanel);
 
+        // Highlight the All Employee button as the initial active screen.
         setActiveButton(
                 allEmployeeButton,
                 allEmployeeButton,
@@ -88,6 +134,7 @@ public class AdminMenu {
                 computeSalaryButton
         );
 
+        // Assign actions to all administrator menu buttons.
         addButtonActions(
                 cardLayout,
                 containerPanel,
@@ -109,6 +156,20 @@ public class AdminMenu {
         return adminMenuPanel;
     }
 
+    /**
+     * Creates the administrator side-navigation panel.
+     *
+     * The buttons are arranged vertically and provide access to employee
+     * management, salary computation, and logout functions.
+     *
+     * @param allEmployeeButton button used to display all employee records
+     * @param addEmployeeButton button used to open the add employee form
+     * @param editEmployeeButton button used to open the edit employee form
+     * @param deleteEmployeeButton button used to open the delete employee form
+     * @param computeSalaryButton button used to open salary computation
+     * @param logoutButton button used to exit the administrator account
+     * @return the completed side-navigation panel
+     */
     private static JPanel createLeftPanel(
         JButton allEmployeeButton,
         JButton addEmployeeButton,
@@ -118,9 +179,11 @@ public class AdminMenu {
         JButton logoutButton
         ) {
 
+        // Panel containing the administrator navigation buttons.
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
 
+        // Apply consistent styling to each navigation button.
         setupSideButton(allEmployeeButton);
         setupSideButton(addEmployeeButton);
         setupSideButton(editEmployeeButton);
@@ -128,29 +191,37 @@ public class AdminMenu {
         setupSideButton(computeSalaryButton);
         setupSideButton(logoutButton);
 
+        // Configure the placement of the navigation buttons.
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 5, 10);
         gbc.anchor = GridBagConstraints.NORTH;
 
+        // Place the All Employee button in the first row.
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(allEmployeeButton, gbc);
 
+        // Place the Add Employee button in the second row.
         gbc.gridy = 1;
         panel.add(addEmployeeButton, gbc);
 
+        // Place the Edit Employee button in the third row.
         gbc.gridy = 2;
         panel.add(editEmployeeButton, gbc);
 
+        // Place the Delete Employee button in the fourth row.
         gbc.gridy = 3;
         panel.add(deleteEmployeeButton, gbc);
 
+        // Place the Compute Salaries button in the fifth row.
         gbc.gridy = 4;
         panel.add(computeSalaryButton, gbc);
 
+        // Place the Logout button in the sixth row.
         gbc.gridy = 5;
         panel.add(logoutButton, gbc);
 
+        // Push the navigation buttons toward the top of the panel.
         gbc.weighty = 1.0;
         gbc.gridy = 6;
         panel.add(Box.createVerticalGlue(), gbc);
@@ -158,39 +229,78 @@ public class AdminMenu {
         return panel;
     }
 
+    /**
+     * Applies a consistent size, font, and color to a side-navigation button.
+     *
+     * @param button the navigation button to style
+     */
     private static void setupSideButton(JButton button) {
+
+        // Set the standard dimensions of the side-navigation button.
         button.setPreferredSize(new Dimension(150, 30));
+
+        // Remove the keyboard focus border.
         button.setFocusable(false);
+
+        // Apply the default inactive button colors.
         button.setBackground(NORMAL_BUTTON);
         button.setForeground(Color.BLACK);
+
+        // Apply the standard navigation button font.
         button.setFont(new Font("Comic Sans", Font.BOLD, 13));
     }
 
-private static void setActiveButton(
-        JButton activeButton,
-        JButton allEmployeeButton,
-        JButton addEmployeeButton,
-        JButton editEmployeeButton,
-        JButton deleteEmployeeButton,
-        JButton computeSalaryButton
-) {
+    /**
+     * Highlights the selected navigation button and resets the remaining
+     * navigation buttons to their normal appearance.
+     *
+     * @param activeButton the navigation button that is currently active
+     * @param allEmployeeButton the All Employee navigation button
+     * @param addEmployeeButton the Add Employee navigation button
+     * @param editEmployeeButton the Edit Employee navigation button
+     * @param deleteEmployeeButton the Delete Employee navigation button
+     * @param computeSalaryButton the Compute Salaries navigation button
+     */
+    private static void setActiveButton(
+            JButton activeButton,
+            JButton allEmployeeButton,
+            JButton addEmployeeButton,
+            JButton editEmployeeButton,
+            JButton deleteEmployeeButton,
+            JButton computeSalaryButton
+    ) {
 
-    allEmployeeButton.setBackground(NORMAL_BUTTON);
-    addEmployeeButton.setBackground(NORMAL_BUTTON);
-    editEmployeeButton.setBackground(NORMAL_BUTTON);
-    deleteEmployeeButton.setBackground(NORMAL_BUTTON);
-    computeSalaryButton.setBackground(NORMAL_BUTTON);
+        // Reset all navigation button backgrounds.
+        allEmployeeButton.setBackground(NORMAL_BUTTON);
+        addEmployeeButton.setBackground(NORMAL_BUTTON);
+        editEmployeeButton.setBackground(NORMAL_BUTTON);
+        deleteEmployeeButton.setBackground(NORMAL_BUTTON);
+        computeSalaryButton.setBackground(NORMAL_BUTTON);
 
-    allEmployeeButton.setForeground(Color.BLACK);
-    addEmployeeButton.setForeground(Color.BLACK);
-    editEmployeeButton.setForeground(Color.BLACK);
-    deleteEmployeeButton.setForeground(Color.BLACK);
-    computeSalaryButton.setForeground(Color.BLACK);
+        // Reset all navigation button text colors.
+        allEmployeeButton.setForeground(Color.BLACK);
+        addEmployeeButton.setForeground(Color.BLACK);
+        editEmployeeButton.setForeground(Color.BLACK);
+        deleteEmployeeButton.setForeground(Color.BLACK);
+        computeSalaryButton.setForeground(Color.BLACK);
 
-    activeButton.setBackground(ACTIVE_BUTTON);
-    activeButton.setForeground(Color.WHITE);
-}
+        // Highlight the currently selected navigation button.
+        activeButton.setBackground(ACTIVE_BUTTON);
+        activeButton.setForeground(Color.WHITE);
+    }
 
+    /**
+     * Creates the top control panel of the salary report screen.
+     *
+     * The panel contains the employee number input field, month selector,
+     * year selector, and Enter button.
+     *
+     * @param employeeNumberField field used to enter an employee number
+     * @param monthBox combo box used to select a month
+     * @param yearBox combo box used to select a year
+     * @param enterButton button used to submit the selected information
+     * @return the completed top control panel
+     */
     private static JPanel createTopPanel(
             JTextField employeeNumberField,
             JComboBox<String> monthBox,
@@ -198,43 +308,55 @@ private static void setActiveButton(
             JButton enterButton
         ) {
 
+        // Panel containing the salary report search controls.
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
 
+        // Label displayed beside the employee number field.
         JLabel label = new JLabel("Please Enter Employee No. :");
         label.setFont(new Font("Comic Sans", Font.BOLD, 15));
 
+        // Configure the employee number input field.
         employeeNumberField.setPreferredSize(new Dimension(200, 30));
         employeeNumberField.setFont(new Font("Comic Sans", Font.BOLD, 15));
 
+        // Configure the month and year selectors.
         monthBox.setFont(new Font("Comic Sans", Font.BOLD, 15));
         yearBox.setFont(new Font("Comic Sans", Font.BOLD, 15));
 
+        // Configure the Enter button.
         enterButton.setPreferredSize(new Dimension(100, 30));
         enterButton.setFocusable(false);
         enterButton.setBackground(Color.WHITE);
         enterButton.setFont(new Font("Comic Sans", Font.BOLD, 15));
 
+        // Configure spacing and alignment for the controls.
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
+        // Add the employee number label.
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(label, gbc);
 
+        // Add the employee number input field.
         gbc.gridx = 1;
         panel.add(employeeNumberField, gbc);
 
+        // Add the month selector.
         gbc.gridx = 2;
         panel.add(monthBox, gbc);
 
+        // Add the year selector.
         gbc.gridx = 3;
         panel.add(yearBox, gbc);
 
+        // Add the Enter button.
         gbc.gridx = 4;
         panel.add(enterButton, gbc);
 
+        // Add horizontal space after the controls.
         gbc.weightx = 1.0;
         gbc.gridx = 5;
         panel.add(Box.createHorizontalGlue(), gbc);
@@ -242,16 +364,30 @@ private static void setActiveButton(
         return panel;
     }
 
+    /**
+     * Creates the salary breakdown display panel.
+     *
+     * The panel contains a non-editable text area placed inside a scroll pane.
+     *
+     * @param textArea the text area used to display salary information
+     * @return the completed salary breakdown panel
+     */
     private static JPanel createCenterPanel(JTextArea textArea) {
 
+        // Panel containing the detailed salary information.
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.WHITE);
 
+        // Prevent users from directly editing the displayed information.
         textArea.setEditable(false);
+
+        // Apply the display font to the salary information.
         textArea.setFont(new Font("Comic Sans", Font.BOLD, 20));
 
+        // Allow the salary details to be scrolled when necessary.
         JScrollPane scrollPane = new JScrollPane(textArea);
 
+        // Configure the salary display to occupy the available space.
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 5, 10, 5);
         gbc.fill = GridBagConstraints.BOTH;
@@ -265,12 +401,21 @@ private static void setActiveButton(
         return panel;
     }
 
+    /**
+     * Adds the navigation panel and content panel to the main administrator
+     * menu using GridBagLayout.
+     *
+     * @param adminMenuPanel the main administrator menu panel
+     * @param leftPanel the side-navigation panel
+     * @param contentPanel the panel containing administrator screens
+     */
     private static void addPanelsToAdminMenu(
             JPanel adminMenuPanel,
             JPanel leftPanel,
             JPanel contentPanel
     ) {
 
+        // Configure and add the side-navigation panel.
         GridBagConstraints gbc = new GridBagConstraints();
 
         gbc.insets = new Insets(5, 5, 5, 0);
@@ -281,6 +426,7 @@ private static void setActiveButton(
         gbc.weighty = 1.0;
         adminMenuPanel.add(leftPanel, gbc);
 
+        // Create separate constraints for the main content panel.
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.gridx = 1;
@@ -291,6 +437,28 @@ private static void setActiveButton(
         adminMenuPanel.add(contentPanel, gbc);
     }
 
+    /**
+     * Assigns the required actions to the administrator menu buttons.
+     *
+     * This method handles salary report viewing, employee management
+     * navigation, salary computation navigation, and administrator logout.
+     *
+     * @param cardLayout the main layout used to switch application screens
+     * @param containerPanel the main panel containing application screens
+     * @param employeeNumberField field used to enter an employee number
+     * @param monthBox combo box used to select a payroll month
+     * @param yearBox combo box used to select a payroll year
+     * @param enterButton button used to display an employee salary report
+     * @param logoutButton button used to return to the login screen
+     * @param allEmployeeButton button used to display the employee list
+     * @param addEmployeeButton button used to open the add employee form
+     * @param editEmployeeButton button used to open the edit employee form
+     * @param deleteEmployeeButton button used to open the delete employee form
+     * @param computeSalaryButton button used to open salary computation
+     * @param textArea text area used to display salary details
+     * @param contentCardLayout layout used to switch administrator content
+     * @param contentPanel panel containing administrator screens
+     */
     private static void addButtonActions(
             CardLayout cardLayout,
             JPanel containerPanel,
@@ -309,28 +477,34 @@ private static void setActiveButton(
             JPanel contentPanel
     ) {
 
+        // Display the selected employee's salary report.
         enterButton.addActionListener(e -> {
 
+            // Retrieve the employee number entered by the administrator.
             String input = employeeNumberField.getText();
 
+            // Prevent salary processing when no employee number is entered.
             if (input == null || input.trim().isEmpty()) {
                 DialogCustomizer.show("Please Enter Employee Number!");
                 return;
             }
 
-        int monthValue = getMonthValue((String) monthBox.getSelectedItem());
-        int yearValue = Integer.parseInt((String) yearBox.getSelectedItem());
+            // Convert the selected month and year into numeric values.
+            int monthValue = getMonthValue((String) monthBox.getSelectedItem());
+            int yearValue = Integer.parseInt((String) yearBox.getSelectedItem());
 
-      
+            // Generate the selected employee's salary report.
+            showSalaryReport(
+                    input,
+                    monthValue,
+                    yearValue,
+                    textArea
+            );
 
-        showSalaryReport(
-            input,
-            monthValue,
-            yearValue,
-            textArea
-        );
+            // Switch to the salary breakdown screen.
             contentCardLayout.show(contentPanel, "Salary_Breakout");
 
+            // Keep the All Employee button highlighted.
             setActiveButton(
                     allEmployeeButton,
                     allEmployeeButton,
@@ -341,65 +515,83 @@ private static void setActiveButton(
             );
         });
 
-         allEmployeeButton.addActionListener(e -> {
+        // Rebuild and display the complete employee salary list.
+        allEmployeeButton.addActionListener(e -> {
 
-    setActiveButton(
-        allEmployeeButton,
-        allEmployeeButton,
-        addEmployeeButton,
-        editEmployeeButton,
-        deleteEmployeeButton,
-        computeSalaryButton
-        );
+            // Highlight the All Employee navigation button.
+            setActiveButton(
+                    allEmployeeButton,
+                    allEmployeeButton,
+                    addEmployeeButton,
+                    editEmployeeButton,
+                    deleteEmployeeButton,
+                    computeSalaryButton
+            );
 
-    contentPanel.removeAll();
+            // Remove the currently displayed administrator content.
+            contentPanel.removeAll();
 
-    JPanel salaryPanel = new JPanel(new BorderLayout());
-    salaryPanel.setBackground(Color.WHITE);
+            // Recreate the main salary report panel.
+            JPanel salaryPanel = new JPanel(new BorderLayout());
+            salaryPanel.setBackground(Color.WHITE);
 
-    JPanel topPanel = createTopPanel(employeeNumberField, monthBox, yearBox, enterButton);
+            // Recreate the salary report controls.
+            JPanel topPanel = createTopPanel(
+                    employeeNumberField,
+                    monthBox,
+                    yearBox,
+                    enterButton
+            );
 
-    JPanel employeeListPanel = createEmployeeListPanel(
-            monthBox,
-            yearBox,
-            employeeNumberField,
-            textArea,
-            contentCardLayout,
-            contentPanel
-    );
+            // Recreate the employee salary list.
+            JPanel employeeListPanel = createEmployeeListPanel(
+                    monthBox,
+                    yearBox,
+                    employeeNumberField,
+                    textArea,
+                    contentCardLayout,
+                    contentPanel
+            );
 
-    salaryPanel.add(topPanel, BorderLayout.NORTH);
-    salaryPanel.add(employeeListPanel, BorderLayout.CENTER);
+            // Add the controls and employee list to the salary report panel.
+            salaryPanel.add(topPanel, BorderLayout.NORTH);
+            salaryPanel.add(employeeListPanel, BorderLayout.CENTER);
 
-    contentPanel.add(salaryPanel, "Salary_Report");
-    contentPanel.add(createCenterPanel(textArea), "Salary_Breakout");
+            // Register the salary report and salary breakdown screens again.
+            contentPanel.add(salaryPanel, "Salary_Report");
+            contentPanel.add(createCenterPanel(textArea), "Salary_Breakout");
 
-    contentPanel.revalidate();
-    contentPanel.repaint();
+            // Refresh the administrator content panel.
+            contentPanel.revalidate();
+            contentPanel.repaint();
 
-    contentCardLayout.show(contentPanel, "Salary_Report");
-});
-     
-     
+            // Display the rebuilt salary report screen.
+            contentCardLayout.show(contentPanel, "Salary_Report");
+        });
 
+        // Open the Add Employee form.
         addEmployeeButton.addActionListener(e -> {
 
-        setActiveButton(
-            addEmployeeButton,
-            allEmployeeButton,
-            addEmployeeButton,
-            editEmployeeButton,
-            deleteEmployeeButton,
-            computeSalaryButton
-        );
+            // Highlight the Add Employee navigation button.
+            setActiveButton(
+                    addEmployeeButton,
+                    allEmployeeButton,
+                    addEmployeeButton,
+                    editEmployeeButton,
+                    deleteEmployeeButton,
+                    computeSalaryButton
+            );
 
+            // Create and display the Add Employee panel.
             JPanel addPanel = createAddEmployeePanel();
             contentPanel.add(addPanel, "Add_Employee");
             contentCardLayout.show(contentPanel, "Add_Employee");
         });
 
+        // Open the Edit Employee form.
         editEmployeeButton.addActionListener(e -> {
 
+            // Highlight the Edit Employee navigation button.
             setActiveButton(
                     editEmployeeButton,
                     allEmployeeButton,
@@ -409,13 +601,16 @@ private static void setActiveButton(
                     computeSalaryButton
             );
 
+            // Create and display the Edit Employee panel.
             JPanel editPanel = createEditEmployeePanel();
             contentPanel.add(editPanel, "Edit_Employee");
             contentCardLayout.show(contentPanel, "Edit_Employee");
         });
 
+        // Open the Delete Employee form.
         deleteEmployeeButton.addActionListener(e -> {
 
+            // Highlight the Delete Employee navigation button.
             setActiveButton(
                     deleteEmployeeButton,
                     allEmployeeButton,
@@ -425,13 +620,16 @@ private static void setActiveButton(
                     computeSalaryButton
             );
 
+            // Create and display the Delete Employee panel.
             JPanel deletePanel = createDeleteEmployeePanel();
             contentPanel.add(deletePanel, "Delete_Employee");
             contentCardLayout.show(contentPanel, "Delete_Employee");
         });
-        
+
+        // Open the salary computation screen.
         computeSalaryButton.addActionListener(e -> {
 
+            // Highlight the Compute Salaries navigation button.
             setActiveButton(
                     computeSalaryButton,
                     allEmployeeButton,
@@ -441,6 +639,7 @@ private static void setActiveButton(
                     computeSalaryButton
             );
 
+            // Create the salary computation panel.
             JPanel computePanel = createComputeSalariesPanel(
                     monthBox,
                     yearBox,
@@ -449,28 +648,49 @@ private static void setActiveButton(
                     contentPanel
             );
 
+            // Register and display the salary computation screen.
             contentPanel.add(computePanel, "Compute_Salaries");
             contentCardLayout.show(contentPanel, "Compute_Salaries");
         });
 
-        
-
+        // Return the administrator to the login screen.
         logoutButton.addActionListener(e -> {
+
+            // Switch the main application display to the login screen.
             cardLayout.show(containerPanel, "Login_Screen");
+
+            // Clear the employee number and salary report fields.
             employeeNumberField.setText("");
             textArea.setText("");
+
+            // Reset the administrator content to the salary report screen.
             contentCardLayout.show(contentPanel, "Salary_Report");
 
+            // Reset the highlighted navigation button.
             setActiveButton(
-                addEmployeeButton,
-                allEmployeeButton,
-                addEmployeeButton,
-                editEmployeeButton,
-                deleteEmployeeButton,
-                computeSalaryButton
-        );
+                    addEmployeeButton,
+                    allEmployeeButton,
+                    addEmployeeButton,
+                    editEmployeeButton,
+                    deleteEmployeeButton,
+                    computeSalaryButton
+            );
         });
     }
+    /**
+     * Creates a table displaying all employees and their payroll information
+     * for the selected month.
+     *
+     * The panel allows the administrator to select an employee and view
+     * the corresponding salary breakdown.
+     *
+     * @param monthValue the selected payroll month represented as a number
+     * @param employeeNumberField field used to store the selected employee number
+     * @param textArea text area used to display salary details
+     * @param contentCardLayout layout used to switch administrator content
+     * @param contentPanel panel containing the administrator screens
+     * @return the completed employee payroll table panel
+     */
     private static JPanel createAllEmployeePanel(
             int monthValue,
             JTextField employeeNumberField,
@@ -479,278 +699,440 @@ private static void setActiveButton(
             JPanel contentPanel
     ) {
 
+        // Main panel containing the employee payroll table.
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
         try {
+
+            // Define the column headings of the employee payroll table.
             String[] columnNames = {
                     "ID", "Last Name", "First Name", "Birth Date",
                     "Hours", "Gross Salary", "Net Salary", "Tax"
             };
 
+            // Retrieve employee and payroll information for the selected month.
             String[][] employeeData = GetList.getTableData(monthValue);
 
+            // Create and configure the employee payroll table.
             JTable table = new JTable(employeeData, columnNames);
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.setFont(new Font("Arial", Font.PLAIN, 13));
             table.setRowHeight(22);
 
+            // Add the table to a scroll pane.
             JScrollPane scrollPane = new JScrollPane(table);
-            JButton viewButton = new JButton("View Selected Employee Salary Breakout");
 
+            // Button used to display the selected employee's salary breakdown.
+            JButton viewButton =
+                    new JButton("View Selected Employee Salary Breakout");
+
+            // Place the table and button inside the panel.
             panel.add(scrollPane, BorderLayout.CENTER);
             panel.add(viewButton, BorderLayout.SOUTH);
 
+            // Display the salary breakdown of the selected employee.
             viewButton.addActionListener(e -> {
 
+                // Retrieve the currently selected table row.
                 int selectedRow = table.getSelectedRow();
 
+                // Require the administrator to select an employee first.
                 if (selectedRow == -1) {
                     DialogCustomizer.show("Please select an employee first.");
                     return;
                 }
 
-                String employeeId = table.getValueAt(selectedRow, 0).toString();
+                // Retrieve the employee number from the selected row.
+                String employeeId =
+                        table.getValueAt(selectedRow, 0).toString();
 
+                // Store the selected employee number in the input field.
                 employeeNumberField.setText(employeeId);
-                showSalaryReport(employeeId, monthValue, 2024, textArea);
+
+                // Generate the selected employee's salary report.
+                showSalaryReport(
+                        employeeId,
+                        monthValue,
+                        2024,
+                        textArea
+                );
+
+                // Switch to the salary report screen.
                 contentCardLayout.show(contentPanel, "Salary_Report");
             });
 
         } catch (IOException ex) {
+
+            // Notify the administrator when payroll records cannot be loaded.
             DialogCustomizer.show("Unable to load employee payroll list.");
         }
 
         return panel;
     }
 
-private static JPanel createAddEmployeePanel() {
+    /**
+     * Creates the form used to add a new employee record.
+     *
+     * The panel generates a new employee number, displays all required
+     * employee fields, automatically computes salary-related values,
+     * validates the entered information, and saves valid records to the
+     * employee CSV file.
+     *
+     * @return the completed Add Employee panel
+     */
+    private static JPanel createAddEmployeePanel() {
 
-    JPanel mainPanel = new JPanel(new GridBagLayout());
-    mainPanel.setBackground(Color.WHITE);
-
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(4, 20, 4, 10);
-    gbc.anchor = GridBagConstraints.WEST;
-
-    JButton saveButton = new JButton("Add Employee");
-
-    JComponent[] fields = createEmployeeFields(false);
-    String[] labels = getAddEmployeeInputLabels();
-
-    try {
-        setComponentValue(fields[0], AddEmployee.generateNextEmployeeNumber());
-        fields[0].setEnabled(false);
-    } catch (IOException ex) {
-        DialogCustomizer.show("Unable to generate Employee Number.");
-    }
-
-    makeSalaryAutoComputed(fields);
-
-    for (int i = 0; i < labels.length; i++) {
-        gbc.gridx = 0;
-        gbc.gridy = i;
-        mainPanel.add(new JLabel(labels[i]), gbc);
-
-        gbc.gridx = 1;
-        mainPanel.add(fields[i], gbc);
-    }
-
-    gbc.gridx = 1;
-    gbc.gridy = labels.length;
-    mainPanel.add(saveButton, gbc);
-
-    saveButton.addActionListener(e -> {
-
-        updateComputedSalaryFields(fields);
-
-        String[] newEmployeeData = getFieldData(fields);
-
-        String validationMessage = AddEmployee.validateEmployeeData(newEmployeeData);
-
-        if (!validationMessage.equals("valid")) {
-            DialogCustomizer.show(validationMessage);
-            return;
-        }
-
-        try {
-            if (AddEmployee.employeeExists(newEmployeeData[0])) {
-                DialogCustomizer.show("Employee Already Exists.");
-                return;
-            }
-
-            AddEmployee.addEmployee(newEmployeeData);
-            GetList.sortCsvByEmployeeNumber();
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Employee Added Successfully.",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-
-            clearFields(fields);
-
-            setComponentValue(fields[0], AddEmployee.generateNextEmployeeNumber());
-            fields[0].setEnabled(false);
-
-            makeSalaryAutoComputed(fields);
-
-        } catch (IOException ex) {
-            DialogCustomizer.show("Something went wrong while adding employee.");
-        }
-    });
-
-    return mainPanel;
-}
-
-   private static JPanel createEditEmployeePanel() {
-
-    JPanel mainPanel = new JPanel(new GridBagLayout());
-    mainPanel.setBackground(Color.WHITE);
-
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(4, 20, 4, 10);
-    gbc.anchor = GridBagConstraints.WEST;
-
-    JTextField searchField = new JTextField();
-    searchField.setPreferredSize(new Dimension(220, 23));
-
-    JButton searchButton = new JButton("Search");
-    JButton saveButton = new JButton("Save Changes");
-    saveButton.setEnabled(false);
-
-    JComponent[] fields = createEmployeeFieldsWithoutEmployeeNumber(true);
-    String[] labels = getEditEmployeeInputLabels();
-
-    makeSalaryAutoComputedForEdit(fields);
-
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    mainPanel.add(new JLabel("Enter Employee # (5 digits):"), gbc);
-
-    gbc.gridx = 1;
-    mainPanel.add(searchField, gbc);
-
-    gbc.gridx = 2;
-    mainPanel.add(searchButton, gbc);
-
-    for (int i = 0; i < labels.length; i++) {
-        gbc.gridx = 0;
-        gbc.gridy = i + 1;
-        mainPanel.add(new JLabel(labels[i]), gbc);
-
-        gbc.gridx = 1;
-        mainPanel.add(fields[i], gbc);
-    }
-
-    gbc.gridx = 1;
-    gbc.gridy = labels.length + 1;
-    mainPanel.add(saveButton, gbc);
-
-    searchButton.addActionListener(e -> {
-
-        String empNo = searchField.getText();
-
-        if (!empNo.matches("\\d{5}")) {
-            DialogCustomizer.show("Invalid ID. Employee # must be exactly 5 digits.");
-            return;
-        }
-
-        try {
-            String[] record = EditEmployee.searchEmployee(empNo);
-
-            if (record == null) {
-                DialogCustomizer.show("Employee Not Found.");
-                return;
-            }
-
-            for (int i = 0; i < fields.length; i++) {
-                setComponentValue(fields[i], record[i + 1]);
-                fields[i].setEnabled(true);
-            }
-
-            makeSalaryAutoComputedForEdit(fields);
-            updateComputedSalaryFieldsForEdit(fields);
-
-            saveButton.setEnabled(true);
-
-        } catch (IOException ex) {
-            DialogCustomizer.show("Something went wrong while searching employee.");
-        }
-    });
-
-    saveButton.addActionListener(e -> {
-
-        updateComputedSalaryFieldsForEdit(fields);
-
-        String[] updatedData = new String[19];
-        updatedData[0] = searchField.getText();
-
-        for (int i = 0; i < fields.length; i++) {
-            updatedData[i + 1] = getComponentValue(fields[i]);
-        }
-
-        String validationMessage = EditEmployee.validateEditedFields(updatedData);
-
-        if (!validationMessage.equals("valid")) {
-            DialogCustomizer.show(validationMessage);
-            return;
-        }
-
-        try {
-            boolean updated = EditEmployee.updateEmployee(updatedData);
-
-            if (updated) {
-                GetList.sortCsvByEmployeeNumber();
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Employee Updated Successfully.",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-            } else {
-                DialogCustomizer.show("Employee Not Found.");
-            }
-
-        } catch (IOException ex) {
-            DialogCustomizer.show("Something went wrong while updating employee.");
-        }
-    });
-
-    return mainPanel;
-}
-
-    private static JPanel createDeleteEmployeePanel() {
-
+        // Main panel containing the Add Employee form.
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(Color.WHITE);
 
+        // Configure the spacing and alignment of form components.
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(4, 20, 4, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Button used to save the new employee record.
+        JButton saveButton = new JButton("Add Employee");
+
+        // Create the employee input fields and corresponding labels.
+        JComponent[] fields = createEmployeeFields(false);
+        String[] labels = getAddEmployeeInputLabels();
+
+        try {
+
+            // Generate and display the next available employee number.
+            setComponentValue(
+                    fields[0],
+                    AddEmployee.generateNextEmployeeNumber()
+            );
+
+            // Prevent manual editing of the generated employee number.
+            fields[0].setEnabled(false);
+
+        } catch (IOException ex) {
+
+            // Notify the administrator if the employee number cannot be generated.
+            DialogCustomizer.show("Unable to generate Employee Number.");
+        }
+
+        // Enable automatic computation of salary-related fields.
+        makeSalaryAutoComputed(fields);
+
+        // Add each label and input field to the form.
+        for (int i = 0; i < labels.length; i++) {
+
+            // Add the field label in the first column.
+            gbc.gridx = 0;
+            gbc.gridy = i;
+            mainPanel.add(new JLabel(labels[i]), gbc);
+
+            // Add the corresponding input component in the second column.
+            gbc.gridx = 1;
+            mainPanel.add(fields[i], gbc);
+        }
+
+        // Add the save button below the employee fields.
+        gbc.gridx = 1;
+        gbc.gridy = labels.length;
+        mainPanel.add(saveButton, gbc);
+
+        // Validate and save the employee record when the button is clicked.
+        saveButton.addActionListener(e -> {
+
+            // Refresh automatically computed salary values before validation.
+            updateComputedSalaryFields(fields);
+
+            // Retrieve all entered employee information from the form.
+            String[] newEmployeeData = getFieldData(fields);
+
+            // Validate the employee information.
+            String validationMessage =
+                    AddEmployee.validateEmployeeData(newEmployeeData);
+
+            // Stop the operation when validation fails.
+            if (!validationMessage.equals("valid")) {
+                DialogCustomizer.show(validationMessage);
+                return;
+            }
+
+            try {
+
+                // Prevent duplicate employee records.
+                if (AddEmployee.employeeExists(newEmployeeData[0])) {
+                    DialogCustomizer.show("Employee Already Exists.");
+                    return;
+                }
+
+                // Save the new employee record to the CSV file.
+                AddEmployee.addEmployee(newEmployeeData);
+
+                // Sort the CSV file by employee number after insertion.
+                GetList.sortCsvByEmployeeNumber();
+
+                // Confirm that the employee was added successfully.
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Employee Added Successfully.",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+                // Clear all input fields after a successful save.
+                clearFields(fields);
+
+                // Generate the next available employee number.
+                setComponentValue(
+                        fields[0],
+                        AddEmployee.generateNextEmployeeNumber()
+                );
+
+                // Keep the generated employee number field disabled.
+                fields[0].setEnabled(false);
+
+                // Restore automatic salary computation for the cleared form.
+                makeSalaryAutoComputed(fields);
+
+            } catch (IOException ex) {
+
+                // Notify the administrator when the employee cannot be saved.
+                DialogCustomizer.show(
+                        "Something went wrong while adding employee."
+                );
+            }
+        });
+
+        return mainPanel;
+    }
+
+    /**
+     * Creates the form used to search for and edit an existing employee.
+     *
+     * The panel allows the administrator to enter an employee number,
+     * retrieve the matching record, modify the employee information,
+     * validate the edited values, and save the updated record.
+     *
+     * @return the completed Edit Employee panel
+     */
+    private static JPanel createEditEmployeePanel() {
+
+        // Main panel containing the employee search controls and edit form.
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBackground(Color.WHITE);
+
+        // Configure spacing and alignment for the form components.
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(4, 20, 4, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Input field used to enter the employee number to search for.
+        JTextField searchField = new JTextField();
+        searchField.setPreferredSize(new Dimension(220, 23));
+
+        // Create the employee search and save buttons.
+        JButton searchButton = new JButton("Search");
+        JButton saveButton = new JButton("Save Changes");
+
+        // Disable saving until a valid employee record has been loaded.
+        saveButton.setEnabled(false);
+
+        // Create the editable employee fields and their corresponding labels.
+        JComponent[] fields = createEmployeeFieldsWithoutEmployeeNumber(true);
+        String[] labels = getEditEmployeeInputLabels();
+
+        // Enable automatic computation of salary-related fields.
+        makeSalaryAutoComputedForEdit(fields);
+
+        // Add the employee number search label.
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        mainPanel.add(new JLabel("Enter Employee # (5 digits):"), gbc);
+
+        // Add the employee number search field.
+        gbc.gridx = 1;
+        mainPanel.add(searchField, gbc);
+
+        // Add the Search button.
+        gbc.gridx = 2;
+        mainPanel.add(searchButton, gbc);
+
+        // Add each employee field and its label to the edit form.
+        for (int i = 0; i < labels.length; i++) {
+
+            gbc.gridx = 0;
+            gbc.gridy = i + 1;
+            mainPanel.add(new JLabel(labels[i]), gbc);
+
+            gbc.gridx = 1;
+            mainPanel.add(fields[i], gbc);
+        }
+
+        // Add the Save Changes button below the employee fields.
+        gbc.gridx = 1;
+        gbc.gridy = labels.length + 1;
+        mainPanel.add(saveButton, gbc);
+
+        // Search for the employee when the Search button is clicked.
+        searchButton.addActionListener(e -> {
+
+            // Retrieve the employee number entered by the administrator.
+            String empNo = searchField.getText();
+
+            // Validate that the employee number contains exactly five digits.
+            if (!empNo.matches("\\d{5}")) {
+                DialogCustomizer.show(
+                        "Invalid ID. Employee # must be exactly 5 digits."
+                );
+                return;
+            }
+
+            try {
+
+                // Search for the employee record in the CSV file.
+                String[] record = EditEmployee.searchEmployee(empNo);
+
+                // Stop the operation when no matching record is found.
+                if (record == null) {
+                    DialogCustomizer.show("Employee Not Found.");
+                    return;
+                }
+
+                // Load the employee record into the editable form fields.
+                for (int i = 0; i < fields.length; i++) {
+                    setComponentValue(fields[i], record[i + 1]);
+                    fields[i].setEnabled(true);
+                }
+
+                // Restore salary auto-computation after loading the record.
+                makeSalaryAutoComputedForEdit(fields);
+
+                // Refresh the automatically computed salary fields.
+                updateComputedSalaryFieldsForEdit(fields);
+
+                // Allow the administrator to save the edited employee record.
+                saveButton.setEnabled(true);
+
+            } catch (IOException ex) {
+
+                // Notify the administrator when the search cannot be completed.
+                DialogCustomizer.show(
+                        "Something went wrong while searching employee."
+                );
+            }
+        });
+
+        // Validate and save the edited employee information.
+        saveButton.addActionListener(e -> {
+
+            // Refresh computed salary values before saving.
+            updateComputedSalaryFieldsForEdit(fields);
+
+            // Create a complete employee record with 19 fields.
+            String[] updatedData = new String[19];
+
+            // Preserve the employee number used during the search.
+            updatedData[0] = searchField.getText();
+
+            // Retrieve the edited values from all form components.
+            for (int i = 0; i < fields.length; i++) {
+                updatedData[i + 1] = getComponentValue(fields[i]);
+            }
+
+            // Validate the edited employee information.
+            String validationMessage =
+                    EditEmployee.validateEditedFields(updatedData);
+
+            // Stop the update when validation fails.
+            if (!validationMessage.equals("valid")) {
+                DialogCustomizer.show(validationMessage);
+                return;
+            }
+
+            try {
+
+                // Update the matching employee record in the CSV file.
+                boolean updated =
+                        EditEmployee.updateEmployee(updatedData);
+
+                if (updated) {
+
+                    // Restore employee number order after the update.
+                    GetList.sortCsvByEmployeeNumber();
+
+                    // Confirm that the employee record was updated successfully.
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Employee Updated Successfully.",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+
+                } else {
+
+                    // Notify the administrator if the employee record disappeared.
+                    DialogCustomizer.show("Employee Not Found.");
+                }
+
+            } catch (IOException ex) {
+
+                // Notify the administrator when the record cannot be updated.
+                DialogCustomizer.show(
+                        "Something went wrong while updating employee."
+                );
+            }
+        });
+
+        return mainPanel;
+    }
+    /**
+     * Creates the form used to search for and delete an employee record.
+     *
+     * The panel allows the administrator to search using one or more employee
+     * details, review matching records, select the correct employee when
+     * multiple matches are found, and permanently remove the selected
+     * employee and attendance records.
+     *
+     * @return the completed Delete Employee panel
+     */
+    private static JPanel createDeleteEmployeePanel() {
+
+        // Main panel containing the employee search and deletion controls.
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBackground(Color.WHITE);
+
+        // Configure spacing and alignment for the form components.
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 20, 5, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
+        // Create the employee search input fields.
         JTextField empNoField = new JTextField();
         JTextField lastNameField = new JTextField();
         JTextField firstNameField = new JTextField();
         JFormattedTextField birthdayField = createMaskedField("##/##/####");
 
+        // Set a consistent size for all search fields.
         empNoField.setPreferredSize(new Dimension(220, 25));
         lastNameField.setPreferredSize(new Dimension(220, 25));
         firstNameField.setPreferredSize(new Dimension(220, 25));
         birthdayField.setPreferredSize(new Dimension(220, 25));
 
+        // Display the selected employee details before deletion.
         JTextArea resultArea = new JTextArea(10, 35);
         resultArea.setEditable(false);
         resultArea.setFont(new Font("Comic Sans", Font.BOLD, 14));
 
+        // Allow the employee details to be scrolled when necessary.
         JScrollPane scrollPane = new JScrollPane(resultArea);
 
+        // Create the search and deletion buttons.
         JButton searchButton = new JButton("Search Employee");
         JButton deleteButton = new JButton("Delete Employee");
+
+        // Disable deletion until a valid employee has been selected.
         deleteButton.setEnabled(false);
 
+        // Add the employee number label and field.
         gbc.gridx = 0;
         gbc.gridy = 0;
         mainPanel.add(new JLabel("Employee # (5 digits):"), gbc);
@@ -758,6 +1140,7 @@ private static JPanel createAddEmployeePanel() {
         gbc.gridx = 1;
         mainPanel.add(empNoField, gbc);
 
+        // Add the last name label and field.
         gbc.gridx = 0;
         gbc.gridy = 1;
         mainPanel.add(new JLabel("Last Name:"), gbc);
@@ -765,6 +1148,7 @@ private static JPanel createAddEmployeePanel() {
         gbc.gridx = 1;
         mainPanel.add(lastNameField, gbc);
 
+        // Add the first name label and field.
         gbc.gridx = 0;
         gbc.gridy = 2;
         mainPanel.add(new JLabel("First Name:"), gbc);
@@ -772,6 +1156,7 @@ private static JPanel createAddEmployeePanel() {
         gbc.gridx = 1;
         mainPanel.add(firstNameField, gbc);
 
+        // Add the birthday label and masked field.
         gbc.gridx = 0;
         gbc.gridy = 3;
         mainPanel.add(new JLabel("Birthday (MM/DD/YYYY):"), gbc);
@@ -779,32 +1164,45 @@ private static JPanel createAddEmployeePanel() {
         gbc.gridx = 1;
         mainPanel.add(birthdayField, gbc);
 
+        // Add the employee search button.
         gbc.gridx = 1;
         gbc.gridy = 4;
         mainPanel.add(searchButton, gbc);
 
+        // Add the employee result display area.
         gbc.gridx = 0;
         gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
         mainPanel.add(scrollPane, gbc);
 
+        // Add the Delete Employee button.
         gbc.gridx = 1;
         gbc.gridy = 6;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
         mainPanel.add(deleteButton, gbc);
 
+        /*
+         * Stores the employee number selected for deletion.
+         * A single-element array is used so the value can be updated
+         * inside action listeners.
+         */
         final String[] selectedEmployeeNumber = {""};
+
+        // Table used when multiple employee records match the search criteria.
         JTable matchTable = new JTable();
 
+        // Search for matching employees when the Search Employee button is clicked.
         searchButton.addActionListener(e -> {
 
+            // Retrieve the search values entered by the administrator.
             String empNo = empNoField.getText();
             String lastName = lastNameField.getText();
             String firstName = firstNameField.getText();
             String birthday = birthdayField.getText();
 
+            // Validate the entered search criteria.
             String validationMessage = DeleteEmployee.validateDeleteInput(
                     empNo,
                     lastName,
@@ -812,6 +1210,7 @@ private static JPanel createAddEmployeePanel() {
                     birthday
             );
 
+            // Reset the deletion state when validation fails.
             if (!validationMessage.equals("valid")) {
                 DialogCustomizer.show(validationMessage);
                 deleteButton.setEnabled(false);
@@ -821,6 +1220,8 @@ private static JPanel createAddEmployeePanel() {
             }
 
             try {
+
+                // Retrieve all employee records matching the entered criteria.
                 ArrayList<String[]> matches =
                         DeleteEmployee.searchMatchingEmployees(
                                 empNo,
@@ -829,6 +1230,7 @@ private static JPanel createAddEmployeePanel() {
                                 birthday
                         );
 
+                // Stop the operation when no matching employee is found.
                 if (matches.isEmpty()) {
                     DialogCustomizer.show("Employee Not Found.");
                     deleteButton.setEnabled(false);
@@ -837,11 +1239,15 @@ private static JPanel createAddEmployeePanel() {
                     return;
                 }
 
+                // Display the employee directly when only one match is found.
                 if (matches.size() == 1) {
 
                     String[] record = matches.get(0);
+
+                    // Store the selected employee number for deletion.
                     selectedEmployeeNumber[0] = record[0];
 
+                    // Display the complete employee details for confirmation.
                     resultArea.setText(
                             "Employee Found\n" +
                             "============================\n" +
@@ -856,10 +1262,12 @@ private static JPanel createAddEmployeePanel() {
                             "Immediate Supervisor: " + record[12]
                     );
 
+                    // Enable deletion after a single employee has been identified.
                     deleteButton.setEnabled(true);
                     return;
                 }
 
+                // Define the columns displayed when several matches are found.
                 String[] columns = {
                         "Employee #",
                         "Last Name",
@@ -869,9 +1277,11 @@ private static JPanel createAddEmployeePanel() {
                         "Position"
                 };
 
+                // Prepare the table data for all matching employees.
                 String[][] data = new String[matches.size()][6];
 
                 for (int i = 0; i < matches.size(); i++) {
+
                     String[] record = matches.get(i);
 
                     data[i][0] = record[0];
@@ -882,10 +1292,12 @@ private static JPanel createAddEmployeePanel() {
                     data[i][5] = record[11];
                 }
 
+                // Load the matching employee records into the selection table.
                 matchTable.setModel(
                         new javax.swing.table.DefaultTableModel(data, columns)
                 );
 
+                // Display the employee selection table in a confirmation dialog.
                 int selectedOption = JOptionPane.showConfirmDialog(
                         null,
                         new JScrollPane(matchTable),
@@ -894,19 +1306,26 @@ private static JPanel createAddEmployeePanel() {
                         JOptionPane.PLAIN_MESSAGE
                 );
 
+                // Process the selected table row when the user confirms.
                 if (selectedOption == JOptionPane.OK_OPTION) {
 
+                    // Retrieve the row selected by the administrator.
                     int selectedRow = matchTable.getSelectedRow();
 
+                    // Require an employee to be selected from the table.
                     if (selectedRow == -1) {
-                        DialogCustomizer.show("Please select an employee from the table.");
+                        DialogCustomizer.show(
+                                "Please select an employee from the table."
+                        );
                         deleteButton.setEnabled(false);
                         return;
                     }
 
+                    // Store the employee number selected from the table.
                     selectedEmployeeNumber[0] =
                             matchTable.getValueAt(selectedRow, 0).toString();
 
+                    // Display the selected employee details for confirmation.
                     resultArea.setText(
                             "Selected Employee for Deletion\n" +
                             "============================\n" +
@@ -918,16 +1337,23 @@ private static JPanel createAddEmployeePanel() {
                             "Position: " + matchTable.getValueAt(selectedRow, 5)
                     );
 
+                    // Enable deletion after an employee has been selected.
                     deleteButton.setEnabled(true);
                 }
 
             } catch (IOException ex) {
-                DialogCustomizer.show("Something went wrong while searching employee.");
+
+                // Notify the administrator when the search cannot be completed.
+                DialogCustomizer.show(
+                        "Something went wrong while searching employee."
+                );
             }
         });
 
+        // Delete the selected employee when the Delete Employee button is clicked.
         deleteButton.addActionListener(e -> {
 
+            // Ask the administrator to confirm the deletion.
             int confirm = JOptionPane.showConfirmDialog(
                     null,
                     "Are you sure you want to delete Employee # " +
@@ -936,108 +1362,189 @@ private static JPanel createAddEmployeePanel() {
                     JOptionPane.YES_NO_OPTION
             );
 
+            // Cancel the operation when the administrator does not confirm.
             if (confirm != JOptionPane.YES_OPTION) {
                 DialogCustomizer.show("Delete operation cancelled.");
                 return;
             }
 
             try {
-                boolean deleted = DeleteEmployee.deleteEmployee(selectedEmployeeNumber[0]);
-                
-                DeleteEmployee.deleteEmployeeAttendance(selectedEmployeeNumber[0]);
+
+                // Remove the selected employee record.
+                boolean deleted =
+                        DeleteEmployee.deleteEmployee(
+                                selectedEmployeeNumber[0]
+                        );
+
+                // Remove all attendance records associated with the employee.
+                DeleteEmployee.deleteEmployeeAttendance(
+                        selectedEmployeeNumber[0]
+                );
 
                 if (deleted) {
-                    
-                    GetList.sortCsvByEmployeeNumber();
-                    JOptionPane.showMessageDialog(
-                    null,
-                    "Employee Deleted Successfully.",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE
-                     );
 
+                    // Restore employee number order after deletion.
+                    GetList.sortCsvByEmployeeNumber();
+
+                    // Confirm that the employee was deleted successfully.
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Employee Deleted Successfully.",
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+
+                    // Clear the search and result fields.
                     empNoField.setText("");
                     lastNameField.setText("");
                     firstNameField.setText("");
                     birthdayField.setText("");
                     resultArea.setText("");
+
+                    // Reset the deletion controls.
                     deleteButton.setEnabled(false);
                     selectedEmployeeNumber[0] = "";
 
                 } else {
+
+                    // Notify the administrator when the employee no longer exists.
                     DialogCustomizer.show("Employee Not Found.");
                 }
 
             } catch (IOException ex) {
-                DialogCustomizer.show("Something went wrong while deleting employee.");
+
+                // Notify the administrator when deletion cannot be completed.
+                DialogCustomizer.show(
+                        "Something went wrong while deleting employee."
+                );
             }
         });
 
         return mainPanel;
     }
+    
+    /**
+     * Creates a formatted text field using the specified input mask.
+     *
+     * The mask controls the format of the value entered by the user.
+     * Underscores are displayed as placeholders for missing characters.
+     *
+     * @param mask the input pattern applied to the formatted text field
+     * @return the configured formatted text field
+     */
     private static JFormattedTextField createMaskedField(String mask) {
 
         try {
+
+            // Create a formatter using the provided input pattern.
             MaskFormatter formatter = new MaskFormatter(mask);
+
+            // Display underscores for characters that have not yet been entered.
             formatter.setPlaceholderCharacter('_');
 
+            // Create the formatted text field using the configured formatter.
             JFormattedTextField field =
                     new JFormattedTextField(formatter);
 
+            // Set the standard size of the formatted input field.
             field.setPreferredSize(new Dimension(220,25));
 
             return field;
 
         } catch (ParseException ex) {
+
+            // Return a basic formatted text field if the mask is invalid.
             return new JFormattedTextField();
         }
     }
 
+    /**
+     * Retrieves the current value of a supported Swing component.
+     *
+     * Combo box values are taken from the selected item, while text field
+     * values are taken from the entered text.
+     *
+     * @param component the Swing component whose value will be retrieved
+     * @return the component value as a String, or an empty String when the
+     *         component type is not supported
+     */
     private static String getComponentValue(JComponent component) {
 
+        // Retrieve the selected value from a combo box.
         if(component instanceof JComboBox) {
             return String.valueOf(
                     ((JComboBox<?>) component).getSelectedItem()
             );
         }
 
+        // Retrieve the entered value from a text field.
         if(component instanceof JTextField) {
             return ((JTextField) component).getText();
         }
 
+        // Return an empty value for unsupported component types.
         return "";
     }
 
+    /**
+     * Assigns a value to a supported Swing component.
+     *
+     * The method selects the matching item for combo boxes or places the
+     * supplied text inside text fields.
+     *
+     * @param component the Swing component whose value will be updated
+     * @param value the value to assign to the component
+     */
     private static void setComponentValue(
             JComponent component,
             String value
     ) {
 
+        // Select the matching value when the component is a combo box.
         if(component instanceof JComboBox) {
             ((JComboBox<?>) component).setSelectedItem(value);
         }
 
+        // Display the value when the component is a text field.
         if(component instanceof JTextField) {
             ((JTextField) component).setText(value);
         }
     }
 
+    /**
+     * Clears all supported employee input fields.
+     *
+     * Text fields are emptied, while combo boxes are returned to their
+     * first available option.
+     *
+     * @param fields the employee form components to reset
+     */
     private static void clearFields(JComponent[] fields) {
 
+        // Reset each component in the employee form.
         for(JComponent field : fields) {
 
+            // Clear text entered in text fields.
             if(field instanceof JTextField) {
                 ((JTextField) field).setText("");
             }
 
+            // Reset combo boxes to their first item.
             if(field instanceof JComboBox) {
                 ((JComboBox<?>) field).setSelectedIndex(0);
             }
         }
     }
 
+    /**
+     * Converts a month name into its corresponding numeric value.
+     *
+     * @param month the name of the selected month
+     * @return the month number from 1 to 12; returns 1 by default
+     */
     private static int getMonthValue(String month) {
 
+        // Return the numeric value corresponding to the selected month.
         switch(month) {
             case "January": return 1;
             case "February": return 2;
@@ -1055,22 +1562,42 @@ private static JPanel createAddEmployeePanel() {
         }
     }
 
+    /**
+     * Generates and displays the selected employee's salary report.
+     *
+     * The method retrieves the employee record and payroll information
+     * for the selected month and year. It displays the employee details,
+     * cut-off salaries, deductions, and monthly net salary in the provided
+     * text area.
+     *
+     * @param employeeNumber the employee number to search for
+     * @param monthValue the selected payroll month represented as a number
+     * @param yearValue the selected payroll year
+     * @param textArea the text area used to display the salary report
+     */
     private static void showSalaryReport(
             String employeeNumber,
             int monthValue,
             int yearValue,
             JTextArea textArea
     ) {
+
         try {
+
+            // Retrieve the employee record using the entered employee number.
             String[] record = EditEmployee.searchEmployee(employeeNumber);
 
+            // Stop the operation when the employee number does not exist.
             if (record == null) {
                 DialogCustomizer.show("Employee Number Not Found!");
                 return;
             }
 
-            Admin payroll = ProcessPayroll.admin(employeeNumber, monthValue, yearValue);
+            // Process the employee's payroll for the selected month and year.
+            Admin payroll =
+                    ProcessPayroll.admin(employeeNumber, monthValue, yearValue);
 
+            // Prepare the employee information section of the report.
             String employeeInfo =
                     "EMPLOYEE INFORMATION\n" +
                     "====================================\n" +
@@ -1083,72 +1610,114 @@ private static JPanel createAddEmployeePanel() {
                     "Position             : " + record[11] + "\n" +
                     "Immediate Supervisor : " + record[12] + "\n\n";
 
+            /*
+             * Display the employee information and a no-record message
+             * when no attendance or payroll data is available.
+             */
             if (payroll == null) {
                 textArea.setText(
                         employeeInfo +
                         "PAYROLL REPORT\n" +
                         "====================================\n" +
-                        "Selected Period      : " + ProcessPayroll.month(monthValue) + " " + yearValue + "\n" +
+                        "Selected Period      : " +
+                        ProcessPayroll.month(monthValue) + " " +
+                        yearValue + "\n" +
                         "No attendance/payroll record found for this employee in the selected period."
                 );
                 return;
             }
 
+            // Calculate the combined government and tax deductions.
             double totalDeductions =
-                payroll.getSSS()
-                + payroll.getphilHealth()
-                + payroll.getpagIbig()
-                + payroll.gettax();
+                    payroll.getSSS()
+                    + payroll.getphilHealth()
+                    + payroll.getpagIbig()
+                    + payroll.gettax();
 
+            /*
+             * The first cut-off net salary is equal to its gross salary
+             * because all deductions are applied to the second cut-off.
+             */
             double firstNetSalary =
-                payroll.getgrossSalary();
+                    payroll.getgrossSalary();
 
+            // Subtract all monthly deductions from the second cut-off salary.
             double secondNetSalary =
-                payroll.getgrossSalary2() - totalDeductions;
+                    payroll.getgrossSalary2() - totalDeductions;
 
+            // Calculate the employee's total monthly net salary.
             double totalNetSalary =
                     firstNetSalary + secondNetSalary;
 
-        textArea.setText(
-                employeeInfo +
-                "PAYROLL REPORT\n" +
-                "====================================\n" +
-                "Selected Period      : " + ProcessPayroll.month(monthValue) + " " + yearValue + "\n\n" +
+            // Display the complete payroll report.
+            textArea.setText(
+                    employeeInfo +
+                    "PAYROLL REPORT\n" +
+                    "====================================\n" +
+                    "Selected Period      : " +
+                    ProcessPayroll.month(monthValue) + " " +
+                    yearValue + "\n\n" +
 
-                "FIRST CUTOFF\n" +
-                "====================================\n" +
-                "Cutoff Date          : " + payroll.getcutOff() + "\n" +
-                "Total Hours Worked   : " + String.format("%.2f", payroll.gettotalHours()) + "\n" +
-                "Gross Salary         : " + String.format("%.2f", payroll.getgrossSalary()) + "\n" +
-                "Net Salary           : " + String.format("%.2f", firstNetSalary) + "\n\n" +
+                    "FIRST CUTOFF\n" +
+                    "====================================\n" +
+                    "Cutoff Date          : " + payroll.getcutOff() + "\n" +
+                    "Total Hours Worked   : " +
+                    String.format("%.2f", payroll.gettotalHours()) + "\n" +
+                    "Gross Salary         : " +
+                    String.format("%.2f", payroll.getgrossSalary()) + "\n" +
+                    "Net Salary           : " +
+                    String.format("%.2f", firstNetSalary) + "\n\n" +
 
-                "SECOND CUTOFF\n" +
-                "====================================\n" +
-                "Cutoff Date          : " + payroll.getcutOff2() + " (Second payout includes all deductions)\n" +
-                "Total Hours Worked   : " + String.format("%.2f", payroll.gettotalHours2()) + "\n" +
-                "Gross Salary         : " + String.format("%.2f", payroll.getgrossSalary2()) + "\n\n" +
+                    "SECOND CUTOFF\n" +
+                    "====================================\n" +
+                    "Cutoff Date          : " +
+                    payroll.getcutOff2() +
+                    " (Second payout includes all deductions)\n" +
+                    "Total Hours Worked   : " +
+                    String.format("%.2f", payroll.gettotalHours2()) + "\n" +
+                    "Gross Salary         : " +
+                    String.format("%.2f", payroll.getgrossSalary2()) + "\n\n" +
 
-                "DEDUCTIONS\n" +
-                "====================================\n" +
-                "SSS                  : " + String.format("%.2f", payroll.getSSS()) + "\n" +
-                "PhilHealth           : " + String.format("%.2f", payroll.getphilHealth()) + "\n" +
-                "Pag-IBIG             : " + String.format("%.2f", payroll.getpagIbig()) + "\n" +
-                "Tax                  : " + String.format("%.2f", payroll.gettax()) + "\n" +
-                "Total Deductions     : " + String.format("%.2f", totalDeductions) + "\n\n" +
+                    "DEDUCTIONS\n" +
+                    "====================================\n" +
+                    "SSS                  : " +
+                    String.format("%.2f", payroll.getSSS()) + "\n" +
+                    "PhilHealth           : " +
+                    String.format("%.2f", payroll.getphilHealth()) + "\n" +
+                    "Pag-IBIG             : " +
+                    String.format("%.2f", payroll.getpagIbig()) + "\n" +
+                    "Tax                  : " +
+                    String.format("%.2f", payroll.gettax()) + "\n" +
+                    "Total Deductions     : " +
+                    String.format("%.2f", totalDeductions) + "\n\n" +
 
-                "Net Salary           : " + String.format("%.2f", secondNetSalary) + "\n\n" +
+                    "Net Salary           : " +
+                    String.format("%.2f", secondNetSalary) + "\n\n" +
 
-                "MONTHLY SUMMARY\n" +
-                "====================================\n" +
-                "Total Net Salary     : " + String.format("%.2f", totalNetSalary)
-        );
+                    "MONTHLY SUMMARY\n" +
+                    "====================================\n" +
+                    "Total Net Salary     : " +
+                    String.format("%.2f", totalNetSalary)
+            );
+
         } catch (IOException ex) {
+
+            // Notify the administrator when employee data cannot be loaded.
             DialogCustomizer.show("Unable to load employee information.");
         }
     }
 
+    /**
+     * Returns the labels used by the Add Employee form.
+     *
+     * The labels correspond to the input fields required when creating
+     * a new employee record.
+     *
+     * @return an array containing the Add Employee form labels
+     */
     private static String[] getAddEmployeeInputLabels() {
 
+        // Return the labels displayed in the Add Employee form.
         return new String[]{
                 "Employee # (Auto-generated):",
                 "Last Name:",
@@ -1169,36 +1738,57 @@ private static JPanel createAddEmployeePanel() {
                 "Clothing Allowance:",
                 "Gross Semi-monthly Rate:",
                 "Hourly Rate:"
-            };
-        }
-    private static String[] getEditEmployeeInputLabels() {
-
-        return new String[]{
-            "Last Name:",
-            "First Name:",
-            "Birthday:",
-            "Address:",
-            "Phone Number:",
-            "SSS Number:",
-            "PhilHealth Number:",
-            "TIN Number:",
-            "Pag-IBIG Number:",
-            "Status:",
-            "Position:",
-            "Immediate Supervisor:",
-            "Basic Salary:",
-            "Rice Subsidy:",
-            "Phone Allowance:",
-            "Clothing Allowance:",
-            "Gross Semi-monthly Rate:",
-            "Hourly Rate:"
         };
     }
-    
+
+    /**
+     * Returns the labels used by the Edit Employee form.
+     *
+     * The employee number is excluded because it is entered separately
+     * when searching for an employee record.
+     *
+     * @return an array containing the Edit Employee form labels
+     */
+    private static String[] getEditEmployeeInputLabels() {
+
+        // Return the labels displayed in the Edit Employee form.
+        return new String[]{
+                "Last Name:",
+                "First Name:",
+                "Birthday:",
+                "Address:",
+                "Phone Number:",
+                "SSS Number:",
+                "PhilHealth Number:",
+                "TIN Number:",
+                "Pag-IBIG Number:",
+                "Status:",
+                "Position:",
+                "Immediate Supervisor:",
+                "Basic Salary:",
+                "Rice Subsidy:",
+                "Phone Allowance:",
+                "Clothing Allowance:",
+                "Gross Semi-monthly Rate:",
+                "Hourly Rate:"
+        };
+    }
+
+    /**
+     * Retrieves the current values entered in the employee form.
+     *
+     * The method extracts the value from each form component and stores
+     * the results in a String array for validation or database updates.
+     *
+     * @param fields the employee form components
+     * @return an array containing the values entered in each field
+     */
     private static String[] getFieldData(JComponent[] fields) {
 
+        // Store the values collected from the employee form.
         String[] data = new String[fields.length];
 
+        // Retrieve the value from each form component.
         for (int i = 0; i < fields.length; i++) {
             data[i] = getComponentValue(fields[i]);
         }
@@ -1206,13 +1796,28 @@ private static JPanel createAddEmployeePanel() {
         return data;
     }
     
+    /**
+     * Creates the complete set of employee input fields used by the
+     * Add Employee form.
+     *
+     * The returned array includes all employee information, including
+     * the employee number, personal details, employment information,
+     * and salary-related fields.
+     *
+     * @param locked true to disable all fields; false to enable editing
+     * @return an array containing all employee input components
+     */
     private static JComponent[] createEmployeeFields(boolean locked) {
 
+        // Create an array to store all employee input components.
         JComponent[] fields = new JComponent[19];
 
+        // Employee identification fields.
         fields[0] = new JTextField();
         fields[1] = new JTextField();
         fields[2] = new JTextField();
+
+        // Employee personal information fields.
         fields[3] = createMaskedField("##/##/####");
         fields[4] = new JTextField();
         fields[5] = createMaskedField("###-###-###");
@@ -1220,9 +1825,13 @@ private static JPanel createAddEmployeePanel() {
         fields[7] = createMaskedField("############");
         fields[8] = createMaskedField("###-###-###-###");
         fields[9] = createMaskedField("############");
+
+        // Employment information fields.
         fields[10] = new JComboBox<>(getStatusOptions());
         fields[11] = new JComboBox<>(getPositionOptions());
         fields[12] = new JComboBox<>(getSupervisorOptions());
+
+        // Salary and allowance fields.
         fields[13] = new JTextField();
         fields[14] = new JTextField();
         fields[15] = new JTextField();
@@ -1230,6 +1839,7 @@ private static JPanel createAddEmployeePanel() {
         fields[17] = new JTextField();
         fields[18] = new JTextField();
 
+        // Apply a consistent size and enabled state to every component.
         for (int i = 0; i < fields.length; i++) {
             fields[i].setPreferredSize(new Dimension(220, 23));
             fields[i].setEnabled(!locked);
@@ -1237,11 +1847,22 @@ private static JPanel createAddEmployeePanel() {
 
         return fields;
     }
-    
+
+    /**
+     * Creates the employee input fields used by the Edit Employee form.
+     *
+     * Unlike the Add Employee form, the employee number is excluded
+     * because it is entered separately when searching for an employee.
+     *
+     * @param locked true to disable all fields; false to enable editing
+     * @return an array containing the editable employee input components
+     */
     private static JComponent[] createEmployeeFieldsWithoutEmployeeNumber(boolean locked) {
 
+        // Create an array to store the editable employee components.
         JComponent[] fields = new JComponent[18];
 
+        // Employee personal information fields.
         fields[0] = new JTextField();
         fields[1] = new JTextField();
         fields[2] = createMaskedField("##/##/####");
@@ -1251,9 +1872,13 @@ private static JPanel createAddEmployeePanel() {
         fields[6] = createMaskedField("############");
         fields[7] = createMaskedField("###-###-###-###");
         fields[8] = createMaskedField("############");
+
+        // Employment information fields.
         fields[9] = new JComboBox<>(getStatusOptions());
         fields[10] = new JComboBox<>(getPositionOptions());
         fields[11] = new JComboBox<>(getSupervisorOptions());
+
+        // Salary and allowance fields.
         fields[12] = new JTextField();
         fields[13] = new JTextField();
         fields[14] = new JTextField();
@@ -1261,6 +1886,7 @@ private static JPanel createAddEmployeePanel() {
         fields[16] = new JTextField();
         fields[17] = new JTextField();
 
+        // Apply a consistent size and enabled state to every component.
         for (int i = 0; i < fields.length; i++) {
             fields[i].setPreferredSize(new Dimension(220, 23));
             fields[i].setEnabled(!locked);
@@ -1269,33 +1895,87 @@ private static JPanel createAddEmployeePanel() {
         return fields;
     }
     
+    /**
+     * Retrieves the available employee status options from the CSV file.
+     *
+     * If the employee records cannot be read, the method returns a
+     * predefined set of default employment status values.
+     *
+     * @return an array containing available employee status options
+     */
     private static String[] getStatusOptions() {
 
         try {
+
+            // Retrieve unique values from the employee status column.
             return GetList.getUniqueCsvValues(10);
+
         } catch (IOException ex) {
+
+            // Return default status options when the CSV file cannot be read.
             return new String[]{"Regular", "Probationary"};
         }
     }
 
+    /**
+     * Retrieves the available employee position options from the CSV file.
+     *
+     * If the employee records cannot be read, the method returns "N/A"
+     * as the default position option.
+     *
+     * @return an array containing available employee position options
+     */
     private static String[] getPositionOptions() {
 
         try {
+
+            // Retrieve unique values from the employee position column.
             return GetList.getUniqueCsvValues(11);
+
         } catch (IOException ex) {
+
+            // Return a default value when the position list cannot be loaded.
             return new String[]{"N/A"};
         }
     }
 
+    /**
+     * Retrieves the available supervisor names from the employee records.
+     *
+     * If the supervisor list cannot be generated, the method returns "N/A"
+     * as the default option.
+     *
+     * @return an array containing available supervisor names
+     */
     private static String[] getSupervisorOptions() {
 
         try {
+
+            // Retrieve the list of employees who may serve as supervisors.
             return GetList.getSupervisorNames();
+
         } catch (IOException ex) {
+
+            // Return a default value when supervisor records cannot be loaded.
             return new String[]{"N/A"};
         }
     }
 
+    /**
+     * Creates the employee list panel displayed in the All Employee screen.
+     *
+     * The panel displays basic employee information in a table and allows
+     * the administrator to select an employee and open the corresponding
+     * salary breakdown for the selected month and year.
+     *
+     * @param monthBox combo box used to select the payroll month
+     * @param yearBox combo box used to select the payroll year
+     * @param employeeNumberField field used to store the selected employee number
+     * @param textArea text area used to display the salary report
+     * @param contentCardLayout layout used to switch administrator content
+     * @param contentPanel panel containing the administrator screens
+     * @return the completed employee list panel
+     */
     private static JPanel createEmployeeListPanel(
             JComboBox<String> monthBox,
             JComboBox<String> yearBox,
@@ -1305,10 +1985,13 @@ private static JPanel createAddEmployeePanel() {
             JPanel contentPanel
     ) {
 
+        // Main panel containing the employee table and view button.
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
         try {
+
+            // Define the column headings of the employee table.
             String[] columnNames = {
                     "ID",
                     "Last Name",
@@ -1318,428 +2001,672 @@ private static JPanel createAddEmployeePanel() {
                     "Position"
             };
 
-            String[][] tableData = GetList.getBasicEmployeeTableData();
+            // Retrieve the basic employee information from the CSV file.
+            String[][] tableData =
+                    GetList.getBasicEmployeeTableData();
 
+            // Create and configure the employee table.
             JTable table = new JTable(tableData, columnNames);
             table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             table.setFont(new Font("Arial", Font.PLAIN, 13));
             table.setRowHeight(22);
 
+            // Place the employee table inside a scroll pane.
             JScrollPane scrollPane = new JScrollPane(table);
 
-            JButton viewButton = new JButton("View Selected Employee Salary Breakout");
+            // Button used to view the selected employee's salary breakdown.
+            JButton viewButton =
+                    new JButton("View Selected Employee Salary Breakout");
 
+            // Add the table and button to the panel.
             panel.add(scrollPane, BorderLayout.CENTER);
             panel.add(viewButton, BorderLayout.SOUTH);
 
+            // Display the salary breakdown of the selected employee.
             viewButton.addActionListener(e -> {
 
+                // Retrieve the currently selected employee row.
                 int selectedRow = table.getSelectedRow();
 
+                // Require the administrator to select an employee first.
                 if (selectedRow == -1) {
-                    DialogCustomizer.show("Please select an employee first.");
+                    DialogCustomizer.show(
+                            "Please select an employee first."
+                    );
                     return;
                 }
 
-                String employeeId = table.getValueAt(selectedRow, 0).toString();
-                int monthValue = getMonthValue((String) monthBox.getSelectedItem());
-                int yearValue = Integer.parseInt((String) yearBox.getSelectedItem());
+                // Retrieve the employee number from the selected row.
+                String employeeId =
+                        table.getValueAt(selectedRow, 0).toString();
 
+                // Convert the selected month and year into numeric values.
+                int monthValue =
+                        getMonthValue(
+                                (String) monthBox.getSelectedItem()
+                        );
+
+                int yearValue =
+                        Integer.parseInt(
+                                (String) yearBox.getSelectedItem()
+                        );
+
+                // Store the selected employee number in the input field.
                 employeeNumberField.setText(employeeId);
-               
 
-            showSalaryReport(
-                employeeId,
-                monthValue,
-                yearValue,
-                textArea
-            );
-              contentCardLayout.show(contentPanel, "Salary_Breakout");
+                // Generate the selected employee's salary report.
+                showSalaryReport(
+                        employeeId,
+                        monthValue,
+                        yearValue,
+                        textArea
+                );
+
+                // Switch to the salary breakdown screen.
+                contentCardLayout.show(
+                        contentPanel,
+                        "Salary_Breakout"
+                );
             });
 
         } catch (IOException ex) {
+
+            // Notify the administrator when the employee list cannot be loaded.
             DialogCustomizer.show("Unable to load employee list.");
         }
 
         return panel;
     }
     
+    /**
+     * Enables automatic computation of salary-related fields in the
+     * Add Employee form.
+     *
+     * The Gross Semi-monthly Rate and Hourly Rate fields are made
+     * read-only and are automatically updated whenever the Basic Salary
+     * field changes.
+     *
+     * @param fields the employee form components
+     */
     private static void makeSalaryAutoComputed(JComponent[] fields) {
 
-    JTextField basicSalaryField = (JTextField) fields[13];
-    JTextField grossSemiMonthlyField = (JTextField) fields[17];
-    JTextField hourlyRateField = (JTextField) fields[18];
+        // Retrieve the salary-related text fields.
+        JTextField basicSalaryField = (JTextField) fields[13];
+        JTextField grossSemiMonthlyField = (JTextField) fields[17];
+        JTextField hourlyRateField = (JTextField) fields[18];
 
-    grossSemiMonthlyField.setEditable(false);
-    hourlyRateField.setEditable(false);
-    grossSemiMonthlyField.setBackground(new Color(235, 235, 235));
-    hourlyRateField.setBackground(new Color(235, 235, 235));
+        // Prevent manual editing of computed salary values.
+        grossSemiMonthlyField.setEditable(false);
+        hourlyRateField.setEditable(false);
 
-    basicSalaryField.getDocument().addDocumentListener(new DocumentListener() {
-        public void insertUpdate(DocumentEvent e) {
-            updateComputedSalaryFields(fields);
-        }
+        // Visually indicate that these fields are read-only.
+        grossSemiMonthlyField.setBackground(new Color(235, 235, 235));
+        hourlyRateField.setBackground(new Color(235, 235, 235));
 
-        public void removeUpdate(DocumentEvent e) {
-            updateComputedSalaryFields(fields);
-        }
+        // Recalculate salary values whenever the Basic Salary changes.
+        basicSalaryField.getDocument().addDocumentListener(new DocumentListener() {
 
-        public void changedUpdate(DocumentEvent e) {
-            updateComputedSalaryFields(fields);
-        }
-    });
-}
+            /**
+             * Invoked when text is inserted into the Basic Salary field.
+             */
+          
+            public void insertUpdate(DocumentEvent e) {
+                updateComputedSalaryFields(fields);
+            }
 
-private static void makeSalaryAutoComputedForEdit(JComponent[] fields) {
+            /**
+             * Invoked when text is removed from the Basic Salary field.
+             */
+           
+            public void removeUpdate(DocumentEvent e) {
+                updateComputedSalaryFields(fields);
+            }
 
-    JTextField basicSalaryField = (JTextField) fields[12];
-    JTextField grossSemiMonthlyField = (JTextField) fields[16];
-    JTextField hourlyRateField = (JTextField) fields[17];
+            /**
+             * Invoked when the document attributes change.
+             * Included to satisfy the DocumentListener interface.
+             */
+          
+            public void changedUpdate(DocumentEvent e) {
+                updateComputedSalaryFields(fields);
+            }
+        });
+    }
+    /**
+     * Enables automatic computation of salary-related fields in the
+     * Edit Employee form.
+     *
+     * The Gross Semi-monthly Rate and Hourly Rate fields are made
+     * read-only and are recalculated whenever the Basic Salary changes.
+     *
+     * @param fields the employee form components used by the Edit Employee form
+     */
+    private static void makeSalaryAutoComputedForEdit(JComponent[] fields) {
 
-    grossSemiMonthlyField.setEditable(false);
-    hourlyRateField.setEditable(false);
-    grossSemiMonthlyField.setBackground(new Color(235, 235, 235));
-    hourlyRateField.setBackground(new Color(235, 235, 235));
+        // Retrieve the salary-related fields from the edit form.
+        JTextField basicSalaryField = (JTextField) fields[12];
+        JTextField grossSemiMonthlyField = (JTextField) fields[16];
+        JTextField hourlyRateField = (JTextField) fields[17];
 
-    basicSalaryField.getDocument().addDocumentListener(new DocumentListener() {
-        public void insertUpdate(DocumentEvent e) {
-            updateComputedSalaryFieldsForEdit(fields);
-        }
+        // Prevent manual editing of automatically computed values.
+        grossSemiMonthlyField.setEditable(false);
+        hourlyRateField.setEditable(false);
 
-        public void removeUpdate(DocumentEvent e) {
-            updateComputedSalaryFieldsForEdit(fields);
-        }
+        // Visually indicate that the computed fields are read-only.
+        grossSemiMonthlyField.setBackground(new Color(235, 235, 235));
+        hourlyRateField.setBackground(new Color(235, 235, 235));
 
-        public void changedUpdate(DocumentEvent e) {
-            updateComputedSalaryFieldsForEdit(fields);
-        }
-    });
-}
+        // Recalculate salary values whenever the Basic Salary field changes.
+        basicSalaryField.getDocument().addDocumentListener(new DocumentListener() {
 
-private static void updateComputedSalaryFields(JComponent[] fields) {
+            // Recalculate when text is inserted.
+            public void insertUpdate(DocumentEvent e) {
+                updateComputedSalaryFieldsForEdit(fields);
+            }
 
-    JTextField basicSalaryField = (JTextField) fields[13];
-    JTextField grossSemiMonthlyField = (JTextField) fields[17];
-    JTextField hourlyRateField = (JTextField) fields[18];
+            // Recalculate when text is removed.
+            public void removeUpdate(DocumentEvent e) {
+                updateComputedSalaryFieldsForEdit(fields);
+            }
 
-    String basicSalaryText = basicSalaryField.getText().replace(",", "").trim();
-
-    if (!basicSalaryText.matches("\\d+(\\.\\d+)?")) {
-        grossSemiMonthlyField.setText("");
-        hourlyRateField.setText("");
-        return;
+            // Recalculate when the document attributes change.
+            public void changedUpdate(DocumentEvent e) {
+                updateComputedSalaryFieldsForEdit(fields);
+            }
+        });
     }
 
-    double basicSalary = Double.parseDouble(basicSalaryText);
-    double grossSemiMonthly = basicSalary / 2.0;
-    double hourlyRate = basicSalary / 176.0;
+    /**
+     * Calculates the Gross Semi-monthly Rate and Hourly Rate for the
+     * Add Employee form using the entered Basic Salary.
+     *
+     * The Gross Semi-monthly Rate is calculated by dividing the Basic Salary
+     * by two, while the Hourly Rate is calculated using 176 monthly work hours.
+     *
+     * @param fields the employee form components used by the Add Employee form
+     */
+    private static void updateComputedSalaryFields(JComponent[] fields) {
 
-    grossSemiMonthlyField.setText(String.format("%.2f", grossSemiMonthly));
-    hourlyRateField.setText(String.format("%.2f", hourlyRate));
-}
+        // Retrieve the salary-related fields from the add form.
+        JTextField basicSalaryField = (JTextField) fields[13];
+        JTextField grossSemiMonthlyField = (JTextField) fields[17];
+        JTextField hourlyRateField = (JTextField) fields[18];
 
-private static void updateComputedSalaryFieldsForEdit(JComponent[] fields) {
+        // Remove commas and surrounding spaces before validation.
+        String basicSalaryText =
+                basicSalaryField.getText().replace(",", "").trim();
 
-    JTextField basicSalaryField = (JTextField) fields[12];
-    JTextField grossSemiMonthlyField = (JTextField) fields[16];
-    JTextField hourlyRateField = (JTextField) fields[17];
+        // Clear computed values when the Basic Salary is not numeric.
+        if (!basicSalaryText.matches("\\d+(\\.\\d+)?")) {
+            grossSemiMonthlyField.setText("");
+            hourlyRateField.setText("");
+            return;
+        }
 
-    String basicSalaryText = basicSalaryField.getText().replace(",", "").trim();
+        // Convert the validated Basic Salary into a numeric value.
+        double basicSalary = Double.parseDouble(basicSalaryText);
 
-    if (!basicSalaryText.matches("\\d+(\\.\\d+)?")) {
-        grossSemiMonthlyField.setText("");
-        hourlyRateField.setText("");
-        return;
-    }
+        // Compute the employee's semi-monthly gross salary.
+        double grossSemiMonthly = basicSalary / 2.0;
 
-    double basicSalary = Double.parseDouble(basicSalaryText);
-    double grossSemiMonthly = basicSalary / 2.0;
-    double hourlyRate = basicSalary / 176.0;
+        // Compute the employee's hourly rate based on 176 monthly work hours.
+        double hourlyRate = basicSalary / 176.0;
 
-    grossSemiMonthlyField.setText(String.format("%.2f", grossSemiMonthly));
-    hourlyRateField.setText(String.format("%.2f", hourlyRate));
-}
-
-private static JPanel createComputeSalariesPanel(
-        JComboBox<String> monthBox,
-        JComboBox<String> yearBox,
-        JTextArea textArea,
-        CardLayout contentCardLayout,
-        JPanel contentPanel
-) {
-
-    JPanel mainPanel = new JPanel(new BorderLayout());
-    mainPanel.setBackground(Color.WHITE);
-
-    JPanel topButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    topButtonPanel.setBackground(Color.WHITE);
-
-    JButton attendanceEntryButton = new JButton("Attendance Entry");
-    JButton attendanceViewerButton = new JButton("Attendance Viewer");
-    JButton computeAllButton = new JButton("Compute All Salaries");
-
-    JComboBox<String> localMonthBox = new JComboBox<>(new String[]{
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-    });
-
-    JComboBox<String> localYearBox = new JComboBox<>(new String[]{
-            "2024", "2025", "2026", "2027", "2028"
-    });
-
-    topButtonPanel.add(new JLabel("Month:"));
-    topButtonPanel.add(localMonthBox);
-    topButtonPanel.add(new JLabel("Year:"));
-    topButtonPanel.add(localYearBox);
-    topButtonPanel.add(attendanceEntryButton);
-    topButtonPanel.add(attendanceViewerButton);
-    topButtonPanel.add(computeAllButton);
-
-    CardLayout computeCardLayout = new CardLayout();
-    JPanel computeContentPanel = new JPanel(computeCardLayout);
-
-    JPanel welcomePanel = new JPanel(new GridBagLayout());
-    welcomePanel.setBackground(Color.WHITE);
-
-    JLabel welcomeLabel = new JLabel(
-            "<html><h2>Compute Salaries Module</h2>" +
-                    "<p>Select Attendance Entry, Attendance Viewer, or Compute All Salaries.</p></html>"
-    );
-
-    welcomePanel.add(welcomeLabel);
-
-    computeContentPanel.add(welcomePanel, "Welcome");
-    computeContentPanel.add(createAttendanceEntryPanel(), "Attendance_Entry");
-
-    attendanceEntryButton.addActionListener(e -> {
-        computeCardLayout.show(computeContentPanel, "Attendance_Entry");
-    });
-
-    attendanceViewerButton.addActionListener(e -> {
-
-        int selectedMonth = getMonthValueFull((String) localMonthBox.getSelectedItem());
-        int selectedYear = Integer.parseInt((String) localYearBox.getSelectedItem());
-
-        JPanel viewerPanel = createAttendanceViewerPanel(
-                selectedMonth,
-                selectedYear
+        // Display the computed values using two decimal places.
+        grossSemiMonthlyField.setText(
+                String.format("%.2f", grossSemiMonthly)
         );
 
-        computeContentPanel.add(viewerPanel, "Attendance_Viewer");
-        computeCardLayout.show(computeContentPanel, "Attendance_Viewer");
-    });
-            ActionListener refreshAttendanceViewer = e -> {
+        hourlyRateField.setText(
+                String.format("%.2f", hourlyRate)
+        );
+    }
 
+    /**
+     * Calculates the Gross Semi-monthly Rate and Hourly Rate for the
+     * Edit Employee form using the employee's Basic Salary.
+     *
+     * The Gross Semi-monthly Rate is calculated by dividing the Basic Salary
+     * by two, while the Hourly Rate is calculated using 176 monthly work hours.
+     *
+     * @param fields the employee form components used by the Edit Employee form
+     */
+    private static void updateComputedSalaryFieldsForEdit(JComponent[] fields) {
+
+        // Retrieve the salary-related fields from the edit form.
+        JTextField basicSalaryField = (JTextField) fields[12];
+        JTextField grossSemiMonthlyField = (JTextField) fields[16];
+        JTextField hourlyRateField = (JTextField) fields[17];
+
+        // Remove commas and surrounding spaces before validation.
+        String basicSalaryText =
+                basicSalaryField.getText().replace(",", "").trim();
+
+        // Clear computed values when the Basic Salary is not numeric.
+        if (!basicSalaryText.matches("\\d+(\\.\\d+)?")) {
+            grossSemiMonthlyField.setText("");
+            hourlyRateField.setText("");
+            return;
+        }
+
+        // Convert the validated Basic Salary into a numeric value.
+        double basicSalary = Double.parseDouble(basicSalaryText);
+
+        // Compute the employee's semi-monthly gross salary.
+        double grossSemiMonthly = basicSalary / 2.0;
+
+        // Compute the employee's hourly rate based on 176 monthly work hours.
+        double hourlyRate = basicSalary / 176.0;
+
+        // Display the computed values using two decimal places.
+        grossSemiMonthlyField.setText(
+                String.format("%.2f", grossSemiMonthly)
+        );
+
+        hourlyRateField.setText(
+                String.format("%.2f", hourlyRate)
+        );
+    }
+
+    /**
+     * Creates the main salary computation panel.
+     *
+     * The panel provides access to attendance entry, attendance viewing,
+     * and salary computation for all employees. It also allows the
+     * administrator to select the target month and year.
+     *
+     * @param monthBox the month selector from the main administrator screen
+     * @param yearBox the year selector from the main administrator screen
+     * @param textArea the text area used for salary report display
+     * @param contentCardLayout the layout used to switch administrator screens
+     * @param contentPanel the panel containing the administrator screens
+     * @return the completed Compute Salaries panel
+     */
+    private static JPanel createComputeSalariesPanel(
+            JComboBox<String> monthBox,
+            JComboBox<String> yearBox,
+            JTextArea textArea,
+            CardLayout contentCardLayout,
+            JPanel contentPanel
+    ) {
+
+        // Main panel containing the salary computation controls and content area.
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(Color.WHITE);
+
+        // Top panel containing month, year, and module navigation controls.
+        JPanel topButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topButtonPanel.setBackground(Color.WHITE);
+
+        // Create the buttons for the available salary computation functions.
+        JButton attendanceEntryButton = new JButton("Attendance Entry");
+        JButton attendanceViewerButton = new JButton("Attendance Viewer");
+        JButton computeAllButton = new JButton("Compute All Salaries");
+
+        // Month selector used within the Compute Salaries module.
+        JComboBox<String> localMonthBox = new JComboBox<>(new String[]{
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+        });
+
+        // Year selector used within the Compute Salaries module.
+        JComboBox<String> localYearBox = new JComboBox<>(new String[]{
+                "2024", "2025", "2026", "2027", "2028"
+        });
+
+        // Add the selection controls and module buttons to the top panel.
+        topButtonPanel.add(new JLabel("Month:"));
+        topButtonPanel.add(localMonthBox);
+        topButtonPanel.add(new JLabel("Year:"));
+        topButtonPanel.add(localYearBox);
+        topButtonPanel.add(attendanceEntryButton);
+        topButtonPanel.add(attendanceViewerButton);
+        topButtonPanel.add(computeAllButton);
+
+        /*
+         * Card layout used to switch between the welcome screen,
+         * attendance entry, attendance viewer, and computed salary results.
+         */
+        CardLayout computeCardLayout = new CardLayout();
+        JPanel computeContentPanel = new JPanel(computeCardLayout);
+
+        // Create the default welcome screen of the module.
+        JPanel welcomePanel = new JPanel(new GridBagLayout());
+        welcomePanel.setBackground(Color.WHITE);
+
+        JLabel welcomeLabel = new JLabel(
+                "<html><h2>Compute Salaries Module</h2>" +
+                        "<p>Select Attendance Entry, Attendance Viewer, or Compute All Salaries.</p></html>"
+        );
+
+        welcomePanel.add(welcomeLabel);
+
+        // Register the initial module screens.
+        computeContentPanel.add(welcomePanel, "Welcome");
+        computeContentPanel.add(createAttendanceEntryPanel(), "Attendance_Entry");
+
+        // Display the Attendance Entry screen.
+        attendanceEntryButton.addActionListener(e -> {
+            computeCardLayout.show(computeContentPanel, "Attendance_Entry");
+        });
+
+        // Display attendance records for the selected month and year.
+        attendanceViewerButton.addActionListener(e -> {
+
+            // Convert the selected month and year into numeric values.
+            int selectedMonth =
+                    getMonthValueFull(
+                            (String) localMonthBox.getSelectedItem()
+                    );
+
+            int selectedYear =
+                    Integer.parseInt(
+                            (String) localYearBox.getSelectedItem()
+                    );
+
+            // Create the attendance viewer using the selected period.
+            JPanel viewerPanel = createAttendanceViewerPanel(
+                    selectedMonth,
+                    selectedYear
+            );
+
+            // Register and display the attendance viewer screen.
+            computeContentPanel.add(viewerPanel, "Attendance_Viewer");
+            computeCardLayout.show(computeContentPanel, "Attendance_Viewer");
+        });
+
+        /*
+         * Refreshes the attendance viewer whenever the selected month
+         * or year changes.
+         */
+        ActionListener refreshAttendanceViewer = e -> {
+
+            // Stop the refresh if the Attendance Viewer button is disabled.
             if (!attendanceViewerButton.isEnabled()) {
                 return;
             }
 
+            // Retrieve the newly selected month and year.
             int selectedMonth = getMonthValueFull(
                     (String) localMonthBox.getSelectedItem());
 
             int selectedYear = Integer.parseInt(
                     (String) localYearBox.getSelectedItem());
 
+            // Recreate the viewer using the updated period.
             JPanel viewerPanel = createAttendanceViewerPanel(
                     selectedMonth,
                     selectedYear
             );
 
+            // Replace the displayed attendance viewer.
             computeContentPanel.add(viewerPanel, "Attendance_Viewer");
             computeCardLayout.show(computeContentPanel, "Attendance_Viewer");
         };
 
+        // Refresh attendance results when the month or year selection changes.
         localMonthBox.addActionListener(refreshAttendanceViewer);
         localYearBox.addActionListener(refreshAttendanceViewer);
-     
 
-    computeAllButton.addActionListener(e -> {
+        // Compute and save salaries for all employees.
+        computeAllButton.addActionListener(e -> {
 
-        int selectedMonth = getMonthValueFull((String) localMonthBox.getSelectedItem());
-        int selectedYear = Integer.parseInt((String) localYearBox.getSelectedItem());
-
-        try {
-
-            String result = ComputeSalaries.computeAllEmployeeSalaries(
-                    selectedMonth,
-                    selectedYear
-            );
-
-            if (result.equals("success")) {
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Salary computation completed and saved successfully.",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-                JPanel salaryResultPanel =
-                createComputedSalaryResultPanel(selectedMonth, selectedYear);
-
-                computeContentPanel.add(salaryResultPanel, "Computed_Salary_Result");
-                computeCardLayout.show(computeContentPanel, "Computed_Salary_Result");
-
-            } else {
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        result,
-                        "Validation Error",
-                        JOptionPane.WARNING_MESSAGE
-                );
-            }
-
-        } catch (IOException ex) {
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Unable to compute salaries.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    });
-
-    mainPanel.add(topButtonPanel, BorderLayout.NORTH);
-    mainPanel.add(computeContentPanel, BorderLayout.CENTER);
-
-    return mainPanel;
-}
- 
-    
-        
-        private static JPanel createAttendanceEntryPanel() {
-
-            JPanel panel = new JPanel(new GridBagLayout());
-            panel.setBackground(Color.WHITE);
-
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(6,10,6,10);
-            gbc.anchor = GridBagConstraints.WEST;
-
-            JTextField employeeNoField = new JTextField();
-            employeeNoField.setPreferredSize(new Dimension(220,25));
-
-            JFormattedTextField dateField =
-                    createMaskedField("##/##/####");
-
-            JFormattedTextField timeInField =
-                    createMaskedField("##:##");
-
-            JFormattedTextField timeOutField =
-                    createMaskedField("##:##");
-
-            JButton saveButton = new JButton("Add Attendance");
-
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            panel.add(new JLabel("Employee #:"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(employeeNoField, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            panel.add(new JLabel("Date (MM/DD/YYYY):"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(dateField, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 2;
-            panel.add(new JLabel("Time In (HH:MM):"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(timeInField, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 3;
-            panel.add(new JLabel("Time Out (HH:MM):"), gbc);
-
-            gbc.gridx = 1;
-            panel.add(timeOutField, gbc);
-
-            gbc.gridx = 1;
-            gbc.gridy = 4;
-            panel.add(saveButton, gbc);
-
-            saveButton.addActionListener(e -> {
-
-                try {
-
-                    String validation =
-                            AttendanceEntry.validateAttendance(
-                                    employeeNoField.getText(),
-                                    dateField.getText(),
-                                    timeInField.getText(),
-                                    timeOutField.getText()
-                            );
-
-                    if(!validation.equals("valid")) {
-
-                        JOptionPane.showMessageDialog(
-                                null,
-                                validation,
-                                "Validation Error",
-                                JOptionPane.WARNING_MESSAGE
-                        );
-                        return;
-                    }
-
-                    AttendanceEntry.addAttendance(
-                            employeeNoField.getText(),
-                            dateField.getText(),
-                            timeInField.getText(),
-                            timeOutField.getText()
+            // Retrieve the selected payroll month and year.
+            int selectedMonth =
+                    getMonthValueFull(
+                            (String) localMonthBox.getSelectedItem()
                     );
+
+            int selectedYear =
+                    Integer.parseInt(
+                            (String) localYearBox.getSelectedItem()
+                    );
+
+            try {
+
+                // Process salary calculations for every employee.
+                String result = ComputeSalaries.computeAllEmployeeSalaries(
+                        selectedMonth,
+                        selectedYear
+                );
+
+                // Display the computed salary results when processing succeeds.
+                if (result.equals("success")) {
 
                     JOptionPane.showMessageDialog(
                             null,
-                            "Attendance added successfully.",
+                            "Salary computation completed and saved successfully.",
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE
                     );
 
-                    employeeNoField.setText("");
-                    dateField.setText("");
-                    timeInField.setText("");
-                    timeOutField.setText("");
+                    // Create the table containing the saved salary computations.
+                    JPanel salaryResultPanel =
+                            createComputedSalaryResultPanel(
+                                    selectedMonth,
+                                    selectedYear
+                            );
 
-                } catch (Exception ex) {
+                    // Register and display the computed salary result screen.
+                    computeContentPanel.add(
+                            salaryResultPanel,
+                            "Computed_Salary_Result"
+                    );
+
+                    computeCardLayout.show(
+                            computeContentPanel,
+                            "Computed_Salary_Result"
+                    );
+
+                } else {
+
+                    // Display salary field validation errors.
+                    JOptionPane.showMessageDialog(
+                            null,
+                            result,
+                            "Validation Error",
+                            JOptionPane.WARNING_MESSAGE
+                    );
+                }
+
+            } catch (IOException ex) {
+
+                // Notify the administrator when salary computation fails.
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Unable to compute salaries.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        });
+
+        // Add the module controls and content area to the main panel.
+        mainPanel.add(topButtonPanel, BorderLayout.NORTH);
+        mainPanel.add(computeContentPanel, BorderLayout.CENTER);
+
+        return mainPanel;
+    }
+ 
+    
+        
+    /**
+     * Creates the form used to add a new employee attendance record.
+     *
+     * The panel collects the employee number, attendance date,
+     * time-in, and time-out. It validates the entered information
+     * before saving the attendance record.
+     *
+     * @return the completed Attendance Entry panel
+     */
+    private static JPanel createAttendanceEntryPanel() {
+
+        // Main panel containing the attendance input form.
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Color.WHITE);
+
+        // Configure spacing and alignment for the form components.
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6,10,6,10);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Field used to enter the employee number.
+        JTextField employeeNoField = new JTextField();
+        employeeNoField.setPreferredSize(new Dimension(220,25));
+
+        // Masked field used to enter the attendance date.
+        JFormattedTextField dateField =
+                createMaskedField("##/##/####");
+
+        // Masked field used to enter the employee's time-in.
+        JFormattedTextField timeInField =
+                createMaskedField("##:##");
+
+        // Masked field used to enter the employee's time-out.
+        JFormattedTextField timeOutField =
+                createMaskedField("##:##");
+
+        // Button used to validate and save the attendance record.
+        JButton saveButton = new JButton("Add Attendance");
+
+        // Add the employee number label and field.
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Employee #:"), gbc);
+
+        gbc.gridx = 1;
+        panel.add(employeeNoField, gbc);
+
+        // Add the attendance date label and field.
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(new JLabel("Date (MM/DD/YYYY):"), gbc);
+
+        gbc.gridx = 1;
+        panel.add(dateField, gbc);
+
+        // Add the time-in label and field.
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(new JLabel("Time In (HH:MM):"), gbc);
+
+        gbc.gridx = 1;
+        panel.add(timeInField, gbc);
+
+        // Add the time-out label and field.
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        panel.add(new JLabel("Time Out (HH:MM):"), gbc);
+
+        gbc.gridx = 1;
+        panel.add(timeOutField, gbc);
+
+        // Add the save button below the attendance fields.
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        panel.add(saveButton, gbc);
+
+        // Validate and save the attendance record when the button is clicked.
+        saveButton.addActionListener(e -> {
+
+            try {
+
+                // Validate the entered attendance information.
+                String validation =
+                        AttendanceEntry.validateAttendance(
+                                employeeNoField.getText(),
+                                dateField.getText(),
+                                timeInField.getText(),
+                                timeOutField.getText()
+                        );
+
+                // Display the validation message when the input is invalid.
+                if(!validation.equals("valid")) {
 
                     JOptionPane.showMessageDialog(
                             null,
-                            "Unable to save attendance.\n" + ex.getMessage(),
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE
+                            validation,
+                            "Validation Error",
+                            JOptionPane.WARNING_MESSAGE
                     );
+                    return;
                 }
-            });
 
-            return panel;
-        }
+                // Save the validated attendance record.
+                AttendanceEntry.addAttendance(
+                        employeeNoField.getText(),
+                        dateField.getText(),
+                        timeInField.getText(),
+                        timeOutField.getText()
+                );
+
+                // Confirm that the attendance record was added successfully.
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Attendance added successfully.",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+                // Clear the form after a successful save.
+                employeeNoField.setText("");
+                dateField.setText("");
+                timeInField.setText("");
+                timeOutField.setText("");
+
+            } catch (Exception ex) {
+
+                // Notify the administrator when the attendance cannot be saved.
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Unable to save attendance.\n" + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        });
+
+        return panel;
+    }
         
-        private static JPanel createAttendanceViewerPanel(
+            /**
+     * Creates the attendance viewer panel for the selected month and year.
+     *
+     * The panel displays employee attendance records in a table and allows
+     * the administrator to optionally filter the results using an employee
+     * number.
+     *
+     * @param monthValue the selected attendance month represented as a number
+     * @param yearValue the selected attendance year
+     * @return the completed Attendance Viewer panel
+     */
+    private static JPanel createAttendanceViewerPanel(
             int monthValue,
             int yearValue
-            ) {
+    ) {
 
-            JPanel panel = new JPanel(new BorderLayout());
-            panel.setBackground(Color.WHITE);
+        // Main panel containing the attendance filter and results table.
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
 
-            JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            filterPanel.setBackground(Color.WHITE);
+        // Panel containing the optional employee number filter.
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        filterPanel.setBackground(Color.WHITE);
 
-            JTextField employeeNoField = new JTextField();
-            employeeNoField.setPreferredSize(new Dimension(160, 25));
+        // Field used to filter attendance by employee number.
+        JTextField employeeNoField = new JTextField();
+        employeeNoField.setPreferredSize(new Dimension(160, 25));
 
-            JButton filterButton = new JButton("Filter");
+        // Button used to apply the employee number filter.
+        JButton filterButton = new JButton("Filter");
 
-            filterPanel.add(new JLabel("Employee # (optional):"));
-            filterPanel.add(employeeNoField);
-            filterPanel.add(filterButton);
+        // Add the filter controls to the panel.
+        filterPanel.add(new JLabel("Employee # (optional):"));
+        filterPanel.add(employeeNoField);
+        filterPanel.add(filterButton);
 
-            String[] columns = {
+        // Define the columns displayed in the attendance table.
+        String[] columns = {
                 "Employee #",
                 "Last Name",
                 "First Name",
@@ -1747,46 +2674,36 @@ private static JPanel createComputeSalariesPanel(
                 "Time In",
                 "Time Out",
                 "Status"
-            };
+        };
 
-            JTable table = new JTable();
-            JScrollPane scrollPane = new JScrollPane(table);
+        // Create the attendance table and place it inside a scroll pane.
+        JTable table = new JTable();
+        JScrollPane scrollPane = new JScrollPane(table);
 
-            filterButton.addActionListener(e -> {
-
-                try {
-
-                    String[][] data = AttendanceViewer.getAttendanceTableData(
-                            employeeNoField.getText(),
-                            monthValue,
-                            yearValue
-                    );
-
-                    table.setModel(new javax.swing.table.DefaultTableModel(data, columns));
-
-                } catch (IOException ex) {
-
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Unable to load attendance records.",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                }
-            });
+        // Apply the employee number filter when the Filter button is clicked.
+        filterButton.addActionListener(e -> {
 
             try {
 
+                // Retrieve attendance records matching the selected period
+                // and optional employee number.
                 String[][] data = AttendanceViewer.getAttendanceTableData(
-                        "",
+                        employeeNoField.getText(),
                         monthValue,
                         yearValue
                 );
 
-                table.setModel(new javax.swing.table.DefaultTableModel(data, columns));
+                // Load the filtered attendance records into the table.
+                table.setModel(
+                        new javax.swing.table.DefaultTableModel(
+                                data,
+                                columns
+                        )
+                );
 
             } catch (IOException ex) {
 
+                // Notify the administrator when attendance data cannot be loaded.
                 JOptionPane.showMessageDialog(
                         null,
                         "Unable to load attendance records.",
@@ -1794,16 +2711,53 @@ private static JPanel createComputeSalariesPanel(
                         JOptionPane.ERROR_MESSAGE
                 );
             }
+        });
 
-            panel.add(filterPanel, BorderLayout.NORTH);
-            panel.add(scrollPane, BorderLayout.CENTER);
+        try {
 
-            return panel;
+            // Load all attendance records for the selected month and year.
+            String[][] data = AttendanceViewer.getAttendanceTableData(
+                    "",
+                    monthValue,
+                    yearValue
+            );
+
+            // Display the initial attendance records in the table.
+            table.setModel(
+                    new javax.swing.table.DefaultTableModel(
+                            data,
+                            columns
+                    )
+            );
+
+        } catch (IOException ex) {
+
+            // Notify the administrator when the initial records cannot be loaded.
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Unable to load attendance records.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
-        
-        private static int getMonthValueFull(String month) {
 
-    switch (month) {
+        // Add the filter controls and attendance table to the main panel.
+        panel.add(filterPanel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        return panel;
+    }
+
+    /**
+     * Converts a month name into its corresponding numeric value.
+     *
+     * @param month the selected month name
+     * @return the month number from 1 to 12; returns 1 by default
+     */
+    private static int getMonthValueFull(String month) {
+
+        // Return the numeric value corresponding to the month name.
+        switch (month) {
             case "January": return 1;
             case "February": return 2;
             case "March": return 3;
@@ -1819,51 +2773,75 @@ private static JPanel createComputeSalariesPanel(
             default: return 1;
         }
     }
-        private static JPanel createComputedSalaryResultPanel(
-        int monthValue,
-        int yearValue) {
 
-            JPanel panel = new JPanel(new BorderLayout());
-            panel.setBackground(Color.WHITE);
+    /**
+     * Creates a table displaying the saved salary computation results
+     * for the selected month and year.
+     *
+     * The table includes employee information, total hours, gross salary,
+     * deductions, net salary, and the computation status.
+     *
+     * @param monthValue the selected payroll month represented as a number
+     * @param yearValue the selected payroll year
+     * @return the completed computed salary result panel
+     */
+    private static JPanel createComputedSalaryResultPanel(
+            int monthValue,
+            int yearValue
+    ) {
 
-            String[] columns = {
-                    "Employee #",
-                    "Last Name",
-                    "First Name",
-                    "Month",
-                    "Year",
-                    "Total Hours",
-                    "Gross Salary",
-                    "Deductions",
-                    "Net Salary",
-                    "Status"
-            };
+        // Main panel containing the computed salary table.
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
 
-            try {
-                String[][] data = GetList.getComputedSalaryTableData(
-                        monthValue,
-                        yearValue
-                );
+        // Define the columns displayed in the salary result table.
+        String[] columns = {
+                "Employee #",
+                "Last Name",
+                "First Name",
+                "Month",
+                "Year",
+                "Total Hours",
+                "Gross Salary",
+                "Deductions",
+                "Net Salary",
+                "Status"
+        };
 
-                JTable table = new JTable(data, columns);
-                table.setFont(new Font("Arial", Font.PLAIN, 13));
-                table.setRowHeight(22);
+        try {
 
-                panel.add(new JScrollPane(table), BorderLayout.CENTER);
+            // Retrieve the saved salary computations for the selected period.
+            String[][] data = GetList.getComputedSalaryTableData(
+                    monthValue,
+                    yearValue
+            );
 
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Unable to load computed salary results.",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            }
+            // Create and configure the computed salary table.
+            JTable table = new JTable(data, columns);
+            table.setFont(new Font("Arial", Font.PLAIN, 13));
+            table.setRowHeight(22);
 
-            return panel;
+            // Add the table to the panel inside a scroll pane.
+            panel.add(
+                    new JScrollPane(table),
+                    BorderLayout.CENTER
+            );
+
+        } catch (IOException ex) {
+
+            // Notify the administrator when salary results cannot be loaded.
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Unable to load computed salary results.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
-        
-        
+
+        return panel;
+    }
+
+
 }
     
 
