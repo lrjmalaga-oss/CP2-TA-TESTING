@@ -1094,334 +1094,413 @@ public class AdminMenu {
      *
      * @return the completed Delete Employee panel
      */
-    private static JPanel createDeleteEmployeePanel() {
+    /**
+ * Creates the Delete Employee module.
+ *
+ * The module displays all employees in a JTable, allows the administrator
+ * to select an employee by clicking a table row, displays the complete
+ * employee details before deletion, removes the selected employee and
+ * related attendance records, and refreshes the table after deletion.
+ *
+ * @return the completed Delete Employee panel
+ */
+private static JPanel createDeleteEmployeePanel() {
 
-        // Main panel containing the employee search and deletion controls.
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBackground(Color.WHITE);
+    JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+    mainPanel.setBackground(Color.WHITE);
+    mainPanel.setBorder(
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+    );
 
-        // Configure spacing and alignment for the form components.
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 20, 5, 10);
-        gbc.anchor = GridBagConstraints.WEST;
+    /*
+     * ------------------------------------------------------------
+     * EMPLOYEE DIRECTORY TABLE
+     * ------------------------------------------------------------
+     */
+    String[] columnNames = {
+            "Employee #",
+            "Last Name",
+            "First Name",
+            "Birthday",
+            "Status",
+            "Position"
+    };
 
-        // Create the employee search input fields.
-        JTextField empNoField = new JTextField();
-        JTextField lastNameField = new JTextField();
-        JTextField firstNameField = new JTextField();
-        JFormattedTextField birthdayField = createMaskedField("##/##/####");
+    JTable employeeTable = new JTable();
+    employeeTable.setSelectionMode(
+            ListSelectionModel.SINGLE_SELECTION
+    );
+    employeeTable.setFont(
+            new Font("Consolas", Font.PLAIN, 14)
+    );
+    employeeTable.setRowHeight(24);
+    employeeTable.getTableHeader().setFont(
+            new Font("Consolas", Font.BOLD, 14)
+    );
 
-        // Set a consistent size for all search fields.
-        empNoField.setPreferredSize(new Dimension(220, 25));
-        lastNameField.setPreferredSize(new Dimension(220, 25));
-        firstNameField.setPreferredSize(new Dimension(220, 25));
-        birthdayField.setPreferredSize(new Dimension(220, 25));
+    JScrollPane tableScrollPane =
+            new JScrollPane(employeeTable);
 
-        // Display the selected employee details before deletion.
-        JTextArea resultArea = new JTextArea(10, 35);
-        resultArea.setEditable(false);
-        resultArea.setFont(new Font("Comic Sans", Font.BOLD, 14));
+    tableScrollPane.setPreferredSize(
+            new Dimension(900, 300)
+    );
 
-        // Allow the employee details to be scrolled when necessary.
-        JScrollPane scrollPane = new JScrollPane(resultArea);
+    JPanel directoryPanel =
+            new JPanel(new BorderLayout(5, 5));
 
-        // Create the search and deletion buttons.
-        JButton searchButton = new JButton("Search Employee");
-        JButton deleteButton = new JButton("Delete Employee");
+    directoryPanel.setBackground(Color.WHITE);
 
-        // Disable deletion until a valid employee has been selected.
-        deleteButton.setEnabled(false);
+    JLabel directoryLabel =
+            new JLabel("Employee Directory");
 
-        // Add the employee number label and field.
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        mainPanel.add(new JLabel("Employee # (5 digits):"), gbc);
+    directoryLabel.setFont(
+            new Font("Consolas", Font.BOLD, 18)
+    );
 
-        gbc.gridx = 1;
-        mainPanel.add(empNoField, gbc);
+    directoryPanel.add(
+            directoryLabel,
+            BorderLayout.NORTH
+    );
 
-        // Add the last name label and field.
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        mainPanel.add(new JLabel("Last Name:"), gbc);
+    directoryPanel.add(
+            tableScrollPane,
+            BorderLayout.CENTER
+    );
 
-        gbc.gridx = 1;
-        mainPanel.add(lastNameField, gbc);
+    /*
+     * ------------------------------------------------------------
+     * EMPLOYEE DETAILS AND DELETE CONTROLS
+     * ------------------------------------------------------------
+     */
+    JPanel detailsPanel =
+            new JPanel(new BorderLayout(5, 5));
 
-        // Add the first name label and field.
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        mainPanel.add(new JLabel("First Name:"), gbc);
+    detailsPanel.setBackground(Color.WHITE);
+    detailsPanel.setBorder(
+            BorderFactory.createTitledBorder(
+                    "Selected Employee Information"
+            )
+    );
 
-        gbc.gridx = 1;
-        mainPanel.add(firstNameField, gbc);
+    JTextArea detailsArea = new JTextArea(16, 45);
+    detailsArea.setEditable(false);
+    detailsArea.setFont(
+            new Font("Consolas", Font.BOLD, 14)
+    );
+    detailsArea.setMargin(
+            new Insets(10, 10, 10, 10)
+    );
 
-        // Add the birthday label and masked field.
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        mainPanel.add(new JLabel("Birthday (MM/DD/YYYY):"), gbc);
+    JScrollPane detailsScrollPane =
+            new JScrollPane(detailsArea);
 
-        gbc.gridx = 1;
-        mainPanel.add(birthdayField, gbc);
+    JButton deleteButton =
+            new JButton("Delete Selected Employee");
 
-        // Add the employee search button.
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        mainPanel.add(searchButton, gbc);
+    deleteButton.setFont(
+            new Font("Consolas", Font.BOLD, 14)
+    );
 
-        // Add the employee result display area.
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.BOTH;
-        mainPanel.add(scrollPane, gbc);
+    // Disable deletion until an employee is selected.
+    deleteButton.setEnabled(false);
 
-        // Add the Delete Employee button.
-        gbc.gridx = 1;
-        gbc.gridy = 6;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.NONE;
-        mainPanel.add(deleteButton, gbc);
+    detailsPanel.add(
+            detailsScrollPane,
+            BorderLayout.CENTER
+    );
 
-        /*
-         * Stores the employee number selected for deletion.
-         * A single-element array is used so the value can be updated
-         * inside action listeners.
-         */
-        final String[] selectedEmployeeNumber = {""};
+    detailsPanel.add(
+            deleteButton,
+            BorderLayout.SOUTH
+    );
 
-        // Table used when multiple employee records match the search criteria.
-        JTable matchTable = new JTable();
+    /*
+     * Split the module into the employee directory and details area.
+     */
+    JSplitPane splitPane = new JSplitPane(
+            JSplitPane.VERTICAL_SPLIT,
+            directoryPanel,
+            detailsPanel
+    );
 
-        // Search for matching employees when the Search Employee button is clicked.
-        searchButton.addActionListener(e -> {
+    splitPane.setResizeWeight(0.45);
+    splitPane.setDividerLocation(320);
+    splitPane.setOneTouchExpandable(true);
 
-            // Retrieve the search values entered by the administrator.
-            String empNo = empNoField.getText();
-            String lastName = lastNameField.getText();
-            String firstName = firstNameField.getText();
-            String birthday = birthdayField.getText();
+    mainPanel.add(splitPane, BorderLayout.CENTER);
 
-            // Validate the entered search criteria.
-            String validationMessage = DeleteEmployee.validateDeleteInput(
-                    empNo,
-                    lastName,
-                    firstName,
-                    birthday
+    /*
+     * Stores the Employee Number selected from the JTable.
+     * A one-element array allows the value to be updated inside listeners.
+     */
+    final String[] selectedEmployeeNumber = {""};
+
+    /*
+     * ------------------------------------------------------------
+     * INITIAL TABLE LOADING
+     * ------------------------------------------------------------
+     */
+    refreshDeleteEmployeeTable(
+            employeeTable,
+            columnNames
+    );
+
+    /*
+     * ------------------------------------------------------------
+     * TABLE ROW SELECTION
+     * ------------------------------------------------------------
+     */
+    employeeTable.getSelectionModel()
+            .addListSelectionListener(e -> {
+
+        // Ignore intermediate row-selection events.
+        if (e.getValueIsAdjusting()) {
+            return;
+        }
+
+        int selectedRow =
+                employeeTable.getSelectedRow();
+
+        if (selectedRow == -1) {
+
+            selectedEmployeeNumber[0] = "";
+            detailsArea.setText("");
+            deleteButton.setEnabled(false);
+            return;
+        }
+
+        String employeeNumber =
+                employeeTable.getValueAt(
+                        selectedRow,
+                        0
+                ).toString();
+
+        loadEmployeeForDeletion(
+                employeeNumber,
+                selectedEmployeeNumber,
+                detailsArea,
+                deleteButton
+        );
+    });
+
+    /*
+     * ------------------------------------------------------------
+     * DELETE SELECTED EMPLOYEE
+     * ------------------------------------------------------------
+     */
+    deleteButton.addActionListener(e -> {
+
+        if (selectedEmployeeNumber[0].isEmpty()) {
+            DialogCustomizer.show(
+                    "Please select an employee first."
             );
+            return;
+        }
 
-            // Reset the deletion state when validation fails.
-            if (!validationMessage.equals("valid")) {
-                DialogCustomizer.show(validationMessage);
-                deleteButton.setEnabled(false);
-                resultArea.setText("");
-                selectedEmployeeNumber[0] = "";
-                return;
-            }
+        int confirm = JOptionPane.showConfirmDialog(
+                null,
+                "Are you sure you want to delete Employee # "
+                        + selectedEmployeeNumber[0]
+                        + "?\n\n"
+                        + "The employee record and related attendance "
+                        + "records will be permanently removed.",
+                "Confirm Employee Deletion",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
 
-            try {
+        if (confirm != JOptionPane.YES_OPTION) {
+            DialogCustomizer.show(
+                    "Delete operation cancelled."
+            );
+            return;
+        }
 
-                // Retrieve all employee records matching the entered criteria.
-                ArrayList<String[]> matches =
-                        DeleteEmployee.searchMatchingEmployees(
-                                empNo,
-                                lastName,
-                                firstName,
-                                birthday
-                        );
+        try {
 
-                // Stop the operation when no matching employee is found.
-                if (matches.isEmpty()) {
-                    DialogCustomizer.show("Employee Not Found.");
-                    deleteButton.setEnabled(false);
-                    resultArea.setText("");
-                    selectedEmployeeNumber[0] = "";
-                    return;
-                }
-
-                // Display the employee directly when only one match is found.
-                if (matches.size() == 1) {
-
-                    String[] record = matches.get(0);
-
-                    // Store the selected employee number for deletion.
-                    selectedEmployeeNumber[0] = record[0];
-
-                    // Display the complete employee details for confirmation.
-                    resultArea.setText(
-                            "Employee Found\n" +
-                            "============================\n" +
-                            "Employee #: " + record[0] + "\n" +
-                            "Last Name: " + record[1] + "\n" +
-                            "First Name: " + record[2] + "\n" +
-                            "Birthday: " + record[3] + "\n" +
-                            "Address: " + record[4] + "\n" +
-                            "Phone Number: " + record[5] + "\n" +
-                            "Status: " + record[10] + "\n" +
-                            "Position: " + record[11] + "\n" +
-                            "Immediate Supervisor: " + record[12]
+            boolean deleted =
+                    DeleteEmployee.deleteEmployee(
+                            selectedEmployeeNumber[0]
                     );
 
-                    // Enable deletion after a single employee has been identified.
-                    deleteButton.setEnabled(true);
-                    return;
-                }
+            if (deleted) {
 
-                // Define the columns displayed when several matches are found.
-                String[] columns = {
-                        "Employee #",
-                        "Last Name",
-                        "First Name",
-                        "Birthday",
-                        "Status",
-                        "Position"
-                };
-
-                // Prepare the table data for all matching employees.
-                String[][] data = new String[matches.size()][6];
-
-                for (int i = 0; i < matches.size(); i++) {
-
-                    String[] record = matches.get(i);
-
-                    data[i][0] = record[0];
-                    data[i][1] = record[1];
-                    data[i][2] = record[2];
-                    data[i][3] = record[3];
-                    data[i][4] = record[10];
-                    data[i][5] = record[11];
-                }
-
-                // Load the matching employee records into the selection table.
-                matchTable.setModel(
-                        new javax.swing.table.DefaultTableModel(data, columns)
-                );
-
-                // Display the employee selection table in a confirmation dialog.
-                int selectedOption = JOptionPane.showConfirmDialog(
-                        null,
-                        new JScrollPane(matchTable),
-                        "Multiple Employees Found - Select One",
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.PLAIN_MESSAGE
-                );
-
-                // Process the selected table row when the user confirms.
-                if (selectedOption == JOptionPane.OK_OPTION) {
-
-                    // Retrieve the row selected by the administrator.
-                    int selectedRow = matchTable.getSelectedRow();
-
-                    // Require an employee to be selected from the table.
-                    if (selectedRow == -1) {
-                        DialogCustomizer.show(
-                                "Please select an employee from the table."
-                        );
-                        deleteButton.setEnabled(false);
-                        return;
-                    }
-
-                    // Store the employee number selected from the table.
-                    selectedEmployeeNumber[0] =
-                            matchTable.getValueAt(selectedRow, 0).toString();
-
-                    // Display the selected employee details for confirmation.
-                    resultArea.setText(
-                            "Selected Employee for Deletion\n" +
-                            "============================\n" +
-                            "Employee #: " + matchTable.getValueAt(selectedRow, 0) + "\n" +
-                            "Last Name: " + matchTable.getValueAt(selectedRow, 1) + "\n" +
-                            "First Name: " + matchTable.getValueAt(selectedRow, 2) + "\n" +
-                            "Birthday: " + matchTable.getValueAt(selectedRow, 3) + "\n" +
-                            "Status: " + matchTable.getValueAt(selectedRow, 4) + "\n" +
-                            "Position: " + matchTable.getValueAt(selectedRow, 5)
-                    );
-
-                    // Enable deletion after an employee has been selected.
-                    deleteButton.setEnabled(true);
-                }
-
-            } catch (IOException ex) {
-
-                // Notify the administrator when the search cannot be completed.
-                DialogCustomizer.show(
-                        "Something went wrong while searching employee."
-                );
-            }
-        });
-
-        // Delete the selected employee when the Delete Employee button is clicked.
-        deleteButton.addActionListener(e -> {
-
-            // Ask the administrator to confirm the deletion.
-            int confirm = JOptionPane.showConfirmDialog(
-                    null,
-                    "Are you sure you want to delete Employee # " +
-                            selectedEmployeeNumber[0] + "?",
-                    "Confirm Delete",
-                    JOptionPane.YES_NO_OPTION
-            );
-
-            // Cancel the operation when the administrator does not confirm.
-            if (confirm != JOptionPane.YES_OPTION) {
-                DialogCustomizer.show("Delete operation cancelled.");
-                return;
-            }
-
-            try {
-
-                // Remove the selected employee record.
-                boolean deleted =
-                        DeleteEmployee.deleteEmployee(
-                                selectedEmployeeNumber[0]
-                        );
-
-                // Remove all attendance records associated with the employee.
+                /*
+                 * Remove every attendance entry associated with the
+                 * deleted employee.
+                 */
                 DeleteEmployee.deleteEmployeeAttendance(
                         selectedEmployeeNumber[0]
                 );
 
-                if (deleted) {
+                // Restore employee-number order in the CSV file.
+                GetList.sortCsvByEmployeeNumber();
 
-                    // Restore employee number order after deletion.
-                    GetList.sortCsvByEmployeeNumber();
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Employee and related attendance records "
+                                + "were deleted successfully.",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
 
-                    // Confirm that the employee was deleted successfully.
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Employee Deleted Successfully.",
-                            "Success",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
+                /*
+                 * Refresh the JTable so the deleted employee disappears
+                 * immediately without reopening the module.
+                 */
+                refreshDeleteEmployeeTable(
+                        employeeTable,
+                        columnNames
+                );
 
-                    // Clear the search and result fields.
-                    empNoField.setText("");
-                    lastNameField.setText("");
-                    firstNameField.setText("");
-                    birthdayField.setText("");
-                    resultArea.setText("");
+                // Reset the employee selection and details display.
+                employeeTable.clearSelection();
+                selectedEmployeeNumber[0] = "";
+                detailsArea.setText("");
+                deleteButton.setEnabled(false);
 
-                    // Reset the deletion controls.
-                    deleteButton.setEnabled(false);
-                    selectedEmployeeNumber[0] = "";
-
-                } else {
-
-                    // Notify the administrator when the employee no longer exists.
-                    DialogCustomizer.show("Employee Not Found.");
-                }
-
-            } catch (IOException ex) {
-
-                // Notify the administrator when deletion cannot be completed.
+            } else {
                 DialogCustomizer.show(
-                        "Something went wrong while deleting employee."
+                        "Employee Not Found."
                 );
             }
-        });
 
-        return mainPanel;
+        } catch (IOException ex) {
+            DialogCustomizer.show(
+                    "Something went wrong while deleting employee."
+            );
+        }
+    });
+
+    return mainPanel;
+}
+/**
+ * Loads the selected employee's complete information for review
+ * before deletion.
+ *
+ * @param employeeNumber the employee number selected from the JTable
+ * @param selectedEmployeeNumber stores the selected employee number
+ * @param detailsArea the area used to display complete employee details
+ * @param deleteButton the button used to delete the selected employee
+ */
+private static void loadEmployeeForDeletion(
+        String employeeNumber,
+        String[] selectedEmployeeNumber,
+        JTextArea detailsArea,
+        JButton deleteButton
+) {
+
+    try {
+
+        String[] record =
+                EditEmployee.searchEmployee(employeeNumber);
+
+        if (record == null) {
+            DialogCustomizer.show(
+                    "Employee Not Found."
+            );
+
+            selectedEmployeeNumber[0] = "";
+            detailsArea.setText("");
+            deleteButton.setEnabled(false);
+            return;
+        }
+
+        // Store the selected Employee Number for deletion.
+        selectedEmployeeNumber[0] = record[0];
+
+        // Display the complete employee record for confirmation.
+        detailsArea.setText(
+                "EMPLOYEE SELECTED FOR DELETION\n"
+                + "============================================================\n"
+                + "Employee #           : " + record[0] + "\n"
+                + "Last Name            : " + record[1] + "\n"
+                + "First Name           : " + record[2] + "\n"
+                + "Birthday             : " + record[3] + "\n"
+                + "Address              : " + record[4] + "\n"
+                + "Phone Number         : " + record[5] + "\n\n"
+
+                + "GOVERNMENT INFORMATION\n"
+                + "============================================================\n"
+                + "SSS Number           : " + record[6] + "\n"
+                + "PhilHealth Number    : " + record[7] + "\n"
+                + "TIN Number           : " + record[8] + "\n"
+                + "Pag-IBIG Number      : " + record[9] + "\n\n"
+
+                + "EMPLOYMENT INFORMATION\n"
+                + "============================================================\n"
+                + "Status               : " + record[10] + "\n"
+                + "Position             : " + record[11] + "\n"
+                + "Immediate Supervisor : " + record[12] + "\n\n"
+
+                + "SALARY INFORMATION\n"
+                + "============================================================\n"
+                + "Basic Salary         : " + record[13] + "\n"
+                + "Rice Subsidy         : " + record[14] + "\n"
+                + "Phone Allowance      : " + record[15] + "\n"
+                + "Clothing Allowance   : " + record[16] + "\n"
+                + "Gross Semi-monthly   : " + record[17] + "\n"
+                + "Hourly Rate          : " + record[18]
+        );
+
+        detailsArea.setCaretPosition(0);
+        deleteButton.setEnabled(true);
+
+    } catch (IOException ex) {
+        DialogCustomizer.show(
+                "Something went wrong while loading employee."
+        );
+
+        selectedEmployeeNumber[0] = "";
+        detailsArea.setText("");
+        deleteButton.setEnabled(false);
     }
+}
+/**
+ * Reloads the Delete Employee JTable using the latest CSV records.
+ *
+ * @param employeeTable the employee directory table to refresh
+ * @param columnNames the employee table column headings
+ */
+private static void refreshDeleteEmployeeTable(
+        JTable employeeTable,
+        String[] columnNames
+) {
+
+    try {
+
+        String[][] tableData =
+                GetList.getBasicEmployeeTableData();
+
+        employeeTable.setModel(
+                new javax.swing.table.DefaultTableModel(
+                        tableData,
+                        columnNames
+                ) {
+
+                    /**
+                     * Prevents direct editing inside the employee table.
+                     *
+                     * @param row the selected table row
+                     * @param column the selected table column
+                     * @return false because all table cells are read-only
+                     */
+                    @Override
+                    public boolean isCellEditable(
+                            int row,
+                            int column
+                    ) {
+                        return false;
+                    }
+                }
+        );
+
+    } catch (IOException ex) {
+        DialogCustomizer.show(
+                "Unable to load the employee directory."
+        );
+    }
+}
     
     /**
      * Creates a formatted text field using the specified input mask.
