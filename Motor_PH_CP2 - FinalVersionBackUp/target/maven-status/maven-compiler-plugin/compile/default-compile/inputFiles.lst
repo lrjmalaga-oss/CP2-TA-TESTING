@@ -1,21 +1,21 @@
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\AddEmployee.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\Admin.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\AttendanceEntry.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\AttendanceViewer.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\CalculationForHours.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\ComputeSalaries.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\Deductions.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\DeleteEmployee.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\EditEmployee.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\Employee.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\GetList.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\Month.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\ProcessPayroll.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\Rate.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\backend\Verification.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\gui\AdminMenu.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\gui\DialogCustomizer.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\gui\EmployeeMenu.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\gui\Login.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\gui\MainFrame.java
-C:\Users\malag\OneDrive\Desktop\Motor_PH_CP2\src\main\java\com\motorph\Main.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/Main.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/AddEmployee.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/Admin.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/AttendanceEntry.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/AttendanceViewer.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/CalculationForHours.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/ComputeSalaries.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/Deductions.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/DeleteEmployee.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/EditEmployee.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/Employee.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/GetList.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/Month.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/ProcessPayroll.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/Rate.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/backend/Verification.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/gui/AdminMenu.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/gui/DialogCustomizer.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/gui/EmployeeMenu.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/gui/Login.java
+/home/Sterben/CP2-TA-TESTING/Motor_PH_CP2 - FinalVersionBackUp/src/main/java/com/motorph/gui/MainFrame.java

@@ -1,7 +1,9 @@
 package com.motorph.gui;
 
 import com.motorph.backend.*;
-
+import javax.swing.table.DefaultTableModel;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import javax.swing.*;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
@@ -11,7 +13,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
 
 /**
  * Creates and manages the administrator interface of the MotorPH application.
@@ -914,176 +915,306 @@ public class AdminMenu {
      *
      * @return the completed Edit Employee panel
      */
-    private static JPanel createEditEmployeePanel() {
-
-        // Main panel containing the employee search controls and edit form.
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBackground(Color.WHITE);
-
-        // Configure spacing and alignment for the form components.
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 20, 4, 10);
-        gbc.anchor = GridBagConstraints.WEST;
-
-        // Input field used to enter the employee number to search for.
-        JTextField searchField = new JTextField();
-        searchField.setPreferredSize(new Dimension(220, 23));
-
-        // Create the employee search and save buttons.
-        JButton searchButton = new JButton("Search");
-        JButton saveButton = new JButton("Save Changes");
-
-        // Disable saving until a valid employee record has been loaded.
-        saveButton.setEnabled(false);
-
-        // Create the editable employee fields and their corresponding labels.
-        JComponent[] fields = createEmployeeFieldsWithoutEmployeeNumber(true);
-        String[] labels = getEditEmployeeInputLabels();
-
-        // Enable automatic computation of salary-related fields.
-        makeSalaryAutoComputedForEdit(fields);
-
-        // Add the employee number search label.
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        mainPanel.add(new JLabel("Enter Employee # (5 digits):"), gbc);
-
-        // Add the employee number search field.
-        gbc.gridx = 1;
-        mainPanel.add(searchField, gbc);
-
-        // Add the Search button.
-        gbc.gridx = 2;
-        mainPanel.add(searchButton, gbc);
-
-        // Add each employee field and its label to the edit form.
-        for (int i = 0; i < labels.length; i++) {
-
-            gbc.gridx = 0;
-            gbc.gridy = i + 1;
-            mainPanel.add(new JLabel(labels[i]), gbc);
-
-            gbc.gridx = 1;
-            mainPanel.add(fields[i], gbc);
-        }
-
-        // Add the Save Changes button below the employee fields.
-        gbc.gridx = 1;
-        gbc.gridy = labels.length + 1;
-        mainPanel.add(saveButton, gbc);
-
-        // Search for the employee when the Search button is clicked.
-        searchButton.addActionListener(e -> {
-
-            // Retrieve the employee number entered by the administrator.
-            String empNo = searchField.getText();
-
-            // Validate that the employee number contains exactly five digits.
-            if (!empNo.matches("\\d{5}")) {
-                DialogCustomizer.show(
-                        "Invalid ID. Employee # must be exactly 5 digits."
-                );
-                return;
-            }
-
-            try {
-
-                // Search for the employee record in the CSV file.
-                String[] record = EditEmployee.searchEmployee(empNo);
-
-                // Stop the operation when no matching record is found.
-                if (record == null) {
-                    DialogCustomizer.show("Employee Not Found.");
-                    return;
-                }
-
-                // Load the employee record into the editable form fields.
-                for (int i = 0; i < fields.length; i++) {
-                    setComponentValue(fields[i], record[i + 1]);
-                    fields[i].setEnabled(true);
-                }
-
-                // Restore salary auto-computation after loading the record.
-                makeSalaryAutoComputedForEdit(fields);
-
-                // Refresh the automatically computed salary fields.
-                updateComputedSalaryFieldsForEdit(fields);
-
-                // Allow the administrator to save the edited employee record.
-                saveButton.setEnabled(true);
-
-            } catch (IOException ex) {
-
-                // Notify the administrator when the search cannot be completed.
-                DialogCustomizer.show(
-                        "Something went wrong while searching employee."
-                );
-            }
-        });
-
-        // Validate and save the edited employee information.
-        saveButton.addActionListener(e -> {
-
-            // Refresh computed salary values before saving.
-            updateComputedSalaryFieldsForEdit(fields);
-
-            // Create a complete employee record with 19 fields.
-            String[] updatedData = new String[19];
-
-            // Preserve the employee number used during the search.
-            updatedData[0] = searchField.getText();
-
-            // Retrieve the edited values from all form components.
-            for (int i = 0; i < fields.length; i++) {
-                updatedData[i + 1] = getComponentValue(fields[i]);
-            }
-
-            // Validate the edited employee information.
-            String validationMessage =
-                    EditEmployee.validateEditedFields(updatedData);
-
-            // Stop the update when validation fails.
-            if (!validationMessage.equals("valid")) {
-                DialogCustomizer.show(validationMessage);
-                return;
-            }
-
-            try {
-
-                // Update the matching employee record in the CSV file.
-                boolean updated =
-                        EditEmployee.updateEmployee(updatedData);
-
-                if (updated) {
-
-                    // Restore employee number order after the update.
-                    GetList.sortCsvByEmployeeNumber();
-
-                    // Confirm that the employee record was updated successfully.
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Employee Updated Successfully.",
-                            "Success",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
-
-                } else {
-
-                    // Notify the administrator if the employee record disappeared.
-                    DialogCustomizer.show("Employee Not Found.");
-                }
-
-            } catch (IOException ex) {
-
-                // Notify the administrator when the record cannot be updated.
-                DialogCustomizer.show(
-                        "Something went wrong while updating employee."
-                );
-            }
-        });
-
-        return mainPanel;
-    }
+  private static JPanel createEditEmployeePanel() {
+  
+      JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
+      mainPanel.setBackground(Color.WHITE);
+  
+      String[] columns = {
+              "ID", "Last Name", "First Name", "BirthDate", "Address", "Phone Number",
+              "SSS #", "Philhealth#", "TIN #", "Pag-Ibig #", "Status", "Position",
+              "Immediate Supervisor", "Basic Salary", "Rice Subsidy", "Phone Allowance",
+              "Clothing Allowance", "Gross Semi-monthly Rate", "Hourly Rate"
+      };
+  
+      DefaultTableModel model = new DefaultTableModel(columns, 0) {
+          @Override
+          public boolean isCellEditable(int row, int column) {
+              return false;
+          }
+      };
+  
+      JTable table = new JTable(model);
+      table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+      table.setRowHeight(30);
+      
+      int[] widths = {80, 110, 110, 95, 220, 110, 120, 120, 120, 120, 90, 140, 150, 110, 110, 120, 130, 160, 110};
+      for (int i = 0; i < widths.length; i++) {
+          table.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+      }
+  
+      JScrollPane tableScroll = new JScrollPane(table);
+      mainPanel.add(tableScroll, BorderLayout.CENTER);
+  
+      JPanel editPanel = new JPanel(new GridBagLayout());
+      editPanel.setBorder(BorderFactory.createTitledBorder("Edit Employee"));
+      GridBagConstraints gbc = new GridBagConstraints();
+      gbc.insets = new Insets(4, 10, 0, 10);
+      gbc.anchor = GridBagConstraints.WEST;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+  
+      JTextField searchField = new JTextField(15);
+      JButton searchButton = new JButton("Search");
+      JButton saveButton = new JButton("Save Changes");
+      saveButton.setEnabled(false);
+  
+      JTextField txtID = new JTextField(15);
+      JTextField txtLastName = new JTextField(15);
+      JTextField txtFirstName = new JTextField(15);
+      JTextField txtBirthDay = new JTextField(15);
+      JTextField txtAddress = new JTextField(15);
+      JTextField txtPhoneNumber = new JTextField(15);
+      JTextField txtSSS = new JTextField(15);
+      JTextField txtPhilhealth = new JTextField(15);
+      JTextField txtTIN = new JTextField(15);
+      JTextField txtPagibig = new JTextField(15);
+      JTextField txtStatus = new JTextField(15);
+      JTextField txtPosition = new JTextField(15);
+      JTextField txtImmediateSupervisor = new JTextField(15);
+      JTextField txtBasicSalary = new JTextField(15);
+      JTextField txtRiceSubsidy = new JTextField(15);
+      JTextField txtPhoneAllowance = new JTextField(15);
+      JTextField txtClothingAllowance = new JTextField(15);
+      JTextField txtGrossSemiMon = new JTextField(15);
+      JTextField txtHourlyRate = new JTextField(15);
+  
+      txtID.setEditable(false);
+  
+      int r = 0;
+      gbc.gridx = 0; gbc.gridy = r; editPanel.add(new JLabel("Enter Employee # (5 digits):"), gbc);
+      gbc.gridx = 1; editPanel.add(searchField, gbc);
+      gbc.gridx = 2; editPanel.add(searchButton, gbc);
+  
+      r++;
+      addRow(editPanel, gbc, r++, "ID:", txtID);
+      addRow(editPanel, gbc, r++, "Last Name:", txtLastName);
+      addRow(editPanel, gbc, r++, "First Name:", txtFirstName);
+      addRow(editPanel, gbc, r++, "Birth Date:", txtBirthDay);
+      addRow(editPanel, gbc, r++, "Address:", txtAddress);
+      addRow(editPanel, gbc, r++, "Phone Number:", txtPhoneNumber);
+      addRow(editPanel, gbc, r++, "SSS#:", txtSSS);
+      addRow(editPanel, gbc, r++, "Philhealth:", txtPhilhealth);
+      addRow(editPanel, gbc, r++, "TIN:", txtTIN);
+      addRow(editPanel, gbc, r++, "PagIbig:", txtPagibig);
+      addRow(editPanel, gbc, r++, "Status:", txtStatus);
+      addRow(editPanel, gbc, r++, "Position:", txtPosition);
+      addRow(editPanel, gbc, r++, "Immediate Supervisor:", txtImmediateSupervisor);
+      addRow(editPanel, gbc, r++, "Basic Salary:", txtBasicSalary);
+      addRow(editPanel, gbc, r++, "Rice Subsidy:", txtRiceSubsidy);
+      addRow(editPanel, gbc, r++, "Phone Allowance:", txtPhoneAllowance);
+      addRow(editPanel, gbc, r++, "Clothing Allowance:", txtClothingAllowance);
+      addRow(editPanel, gbc, r++, "Gross Semi-monthly:", txtGrossSemiMon);
+      addRow(editPanel, gbc, r++, "Hourly Rate:", txtHourlyRate);
+  
+      gbc.gridx = 1;
+      gbc.gridy = r;
+      editPanel.add(saveButton, gbc);
+  
+      mainPanel.add(editPanel, BorderLayout.EAST);
+  
+      try {
+          loadEmployeeTableData(model);
+      } catch (IOException ex) {
+          DialogCustomizer.show("Unable to load employee list.");
+      }
+  
+      table.getSelectionModel().addListSelectionListener(e -> {
+          if (e.getValueIsAdjusting()) return;
+          int row = table.getSelectedRow();
+          if (row == -1) return;
+  
+          txtID.setText(valueAt(model, row, 0));
+          txtLastName.setText(valueAt(model, row, 1));
+          txtFirstName.setText(valueAt(model, row, 2));
+          txtBirthDay.setText(valueAt(model, row, 3));
+          txtAddress.setText(valueAt(model, row, 4));
+          txtPhoneNumber.setText(valueAt(model, row, 5));
+          txtSSS.setText(valueAt(model, row, 6));
+          txtPhilhealth.setText(valueAt(model, row, 7));
+          txtTIN.setText(valueAt(model, row, 8));
+          txtPagibig.setText(valueAt(model, row, 9));
+          txtStatus.setText(valueAt(model, row, 10));
+          txtPosition.setText(valueAt(model, row, 11));
+          txtImmediateSupervisor.setText(valueAt(model, row, 12));
+          txtBasicSalary.setText(valueAt(model, row, 13));
+          txtRiceSubsidy.setText(valueAt(model, row, 14));
+          txtPhoneAllowance.setText(valueAt(model, row, 15));
+          txtClothingAllowance.setText(valueAt(model, row, 16));
+          txtGrossSemiMon.setText(valueAt(model, row, 17));
+          txtHourlyRate.setText(valueAt(model, row, 18));
+  
+          saveButton.setEnabled(true);
+      });
+  
+      searchButton.addActionListener(e -> {
+          String empNo = searchField.getText().trim();
+  
+          if (!empNo.matches("\\d{5}")) {
+              DialogCustomizer.show("Invalid ID. Employee # must be exactly 5 digits.");
+              return;
+          }
+  
+          try {
+              String[] record = EditEmployee.searchEmployee(empNo);
+              if (record == null) {
+                  DialogCustomizer.show("Employee Not Found.");
+                  return;
+              }
+  
+              txtID.setText(record[0]);
+              txtLastName.setText(record[1]);
+              txtFirstName.setText(record[2]);
+              txtBirthDay.setText(record[3]);
+              txtAddress.setText(record[4]);
+              txtPhoneNumber.setText(record[5]);
+              txtSSS.setText(record[6]);
+              txtPhilhealth.setText(record[7]);
+              txtTIN.setText(record[8]);
+              txtPagibig.setText(record[9]);
+              txtStatus.setText(record[10]);
+              txtPosition.setText(record[11]);
+              txtImmediateSupervisor.setText(record[12]);
+              txtBasicSalary.setText(record[13]);
+              txtRiceSubsidy.setText(record[14]);
+              txtPhoneAllowance.setText(record[15]);
+              txtClothingAllowance.setText(record[16]);
+              txtGrossSemiMon.setText(record[17]);
+              txtHourlyRate.setText(record[18]);
+  
+              saveButton.setEnabled(true);
+  
+              int foundRow = findRowById(model, empNo);
+              if (foundRow != -1) {
+                  table.setRowSelectionInterval(foundRow, foundRow);
+              }
+  
+          } catch (IOException ex) {
+              DialogCustomizer.show("Something went wrong while searching employee.");
+          }
+      });
+  
+      saveButton.addActionListener(e -> {
+          String[] updatedData = new String[19];
+          updatedData[0] = txtID.getText().trim();
+          updatedData[1] = txtLastName.getText().trim();
+          updatedData[2] = txtFirstName.getText().trim();
+          updatedData[3] = txtBirthDay.getText().trim();
+          updatedData[4] = txtAddress.getText().trim();
+          updatedData[5] = txtPhoneNumber.getText().trim();
+          updatedData[6] = txtSSS.getText().trim();
+          updatedData[7] = txtPhilhealth.getText().trim();
+          updatedData[8] = txtTIN.getText().trim();
+          updatedData[9] = txtPagibig.getText().trim();
+          updatedData[10] = txtStatus.getText().trim();
+          updatedData[11] = txtPosition.getText().trim();
+          updatedData[12] = txtImmediateSupervisor.getText().trim();
+          updatedData[13] = txtBasicSalary.getText().trim();
+          updatedData[14] = txtRiceSubsidy.getText().trim();
+          updatedData[15] = txtPhoneAllowance.getText().trim();
+          updatedData[16] = txtClothingAllowance.getText().trim();
+          updatedData[17] = txtGrossSemiMon.getText().trim();
+          updatedData[18] = txtHourlyRate.getText().trim();
+  
+          String validation = EditEmployee.validateEditedFields(updatedData);
+          if (!validation.equals("valid")) {
+              DialogCustomizer.show(validation);
+              return;
+          }
+  
+          int confirm = JOptionPane.showConfirmDialog(
+                  mainPanel,
+                  "Are you sure you want to save these changes?",
+                  "Confirm Update",
+                  JOptionPane.YES_NO_OPTION
+          );
+  
+          if (confirm != JOptionPane.YES_OPTION) {
+              return;
+          }
+  
+          try {
+              boolean updated = EditEmployee.updateEmployee(updatedData);
+              if (updated) {
+                  updateTableRow(model, table.getSelectedRow(), updatedData);
+                  JOptionPane.showMessageDialog(
+                          mainPanel,
+                          "Employee Updated Successfully.",
+                          "Success",
+                          JOptionPane.INFORMATION_MESSAGE
+                  );
+              } else {
+                  DialogCustomizer.show("Employee Not Found.");
+              }
+          } catch (IOException ex) {
+              DialogCustomizer.show("Something went wrong while updating employee.");
+          }
+      });
+  
+      return mainPanel;
+  }
+  //
+  private static void addRow(JPanel panel, GridBagConstraints gbc, int y, String label, JComponent field) {
+      gbc.gridx = 0;
+      gbc.gridy = y;
+      panel.add(new JLabel(label), gbc);
+      gbc.gridx = 1;
+      panel.add(field, gbc);
+  }
+  
+  private static String valueAt(DefaultTableModel model, int row, int col) {
+      Object v = model.getValueAt(row, col);
+      return v == null ? "" : v.toString();
+  }
+  
+  private static int findRowById(DefaultTableModel model, String empNo) {
+      for (int i = 0; i < model.getRowCount(); i++) {
+          if (empNo.equals(model.getValueAt(i, 0).toString().trim())) {
+              return i;
+          }
+      }
+      return -1;
+  }
+  
+  private static void updateTableRow(DefaultTableModel model, int row, String[] data) {
+      if (row == -1) return;
+      for (int i = 0; i < data.length; i++) {
+          model.setValueAt(data[i], row, i);
+      }
+  }
+  //
+  private static void loadEmployeeTableData(DefaultTableModel model) throws IOException {
+      try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/MotorPh.csv"))) {
+          br.readLine();
+          String line;
+          while ((line = br.readLine()) != null) {
+              if (line.trim().isEmpty()) continue;
+              String[] values = parseCsvLine(line);
+              if (values.length >= 19) {
+                  model.addRow(values);
+              }
+          }
+      }
+  } //
+  private static String[] parseCsvLine(String line) {
+      ArrayList<String> result = new ArrayList<>();
+      StringBuilder current = new StringBuilder();
+      boolean inQuotes = false;
+  
+      for (int i = 0; i < line.length(); i++) {
+          char c = line.charAt(i);
+          if (c == '"') {
+              inQuotes = !inQuotes;
+          } else if (c == ',' && !inQuotes) {
+              result.add(current.toString().replace("\"", "").trim());
+              current.setLength(0);
+          } else {
+              current.append(c);
+          }
+      }
+      result.add(current.toString().replace("\"", "").trim());
+      return result.toArray(new String[0]);
+  }
     /**
      * Creates the form used to search for and delete an employee record.
      *
